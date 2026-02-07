@@ -135,6 +135,132 @@ const awsComponents: Component[] = [
         },
         cost: '$1.00/million reqs',
     },
+    {
+        id: 'ecs_service',
+        name: 'ECS Service',
+        icon: '🐳',
+        description: 'Container orchestration',
+        category: 'Compute',
+        resourceType: 'aws_ecs_service',
+        terraformParams: {
+            name: 'my-service',
+            launch_type: 'FARGATE',
+            desired_count: 1,
+        },
+        cost: '$0.04/vCPU/hour',
+    },
+    {
+        id: 'eks_cluster',
+        name: 'EKS Cluster',
+        icon: '☸️',
+        description: 'Kubernetes cluster',
+        category: 'Compute',
+        resourceType: 'aws_eks_cluster',
+        terraformParams: {
+            name: 'my-cluster',
+            version: '1.27',
+        },
+        cost: '$0.10/hour',
+    },
+    {
+        id: 'elasticache_cluster',
+        name: 'ElastiCache',
+        icon: '🧠',
+        description: 'Redis/Memcached',
+        category: 'Database',
+        resourceType: 'aws_elasticache_cluster',
+        terraformParams: {
+            cluster_id: 'my-cache',
+            engine: 'redis',
+            node_type: 'cache.t3.micro',
+            num_cache_nodes: 1,
+        },
+        cost: '$0.016/hour',
+    },
+    {
+        id: 'cloudfront_distribution',
+        name: 'CloudFront',
+        icon: '⚡',
+        description: 'CDN distribution',
+        category: 'Networking',
+        resourceType: 'aws_cloudfront_distribution',
+        terraformParams: {
+            enabled: true,
+            is_ipv6_enabled: true,
+            price_class: 'PriceClass_100',
+        },
+        cost: '$0.085/GB',
+    },
+    {
+        id: 'route53_zone',
+        name: 'Route 53',
+        icon: '🌐',
+        description: 'DNS management',
+        category: 'Networking',
+        resourceType: 'aws_route53_zone',
+        terraformParams: {
+            name: 'example.com',
+            vpc_id: 'vpc-12345678',
+        },
+        cost: '$0.50/zone/month',
+    },
+    {
+        id: 'sns_topic',
+        name: 'SNS Topic',
+        icon: '📢',
+        description: 'Pub/Sub messaging',
+        category: 'Application',
+        resourceType: 'aws_sns_topic',
+        terraformParams: {
+            name: 'my-topic',
+            display_name: 'My Topic',
+        },
+        cost: '$0.50/million reqs',
+    },
+    {
+        id: 'sqs_queue',
+        name: 'SQS Queue',
+        icon: '📨',
+        description: 'Message queue',
+        category: 'Application',
+        resourceType: 'aws_sqs_queue',
+        terraformParams: {
+            name: 'my-queue',
+            delay_seconds: 0,
+            max_message_size: 262144,
+            message_retention_seconds: 345600,
+            receive_wait_time_seconds: 0,
+        },
+        cost: '$0.40/million reqs',
+    },
+    {
+        id: 'iam_role',
+        name: 'IAM Role',
+        icon: '🔒',
+        description: 'Identity management',
+        category: 'Security',
+        resourceType: 'aws_iam_role',
+        terraformParams: {
+            name: 'my-role',
+            assume_role_policy: '{}',
+        },
+        cost: 'Free',
+    },
+    {
+        id: 'waf_web_acl',
+        name: 'WAF Web ACL',
+        icon: '🛡️',
+        description: 'Web Application Firewall',
+        category: 'Security',
+        resourceType: 'aws_wafv2_web_acl',
+        terraformParams: {
+            name: 'my-web-acl',
+            scope: 'REGIONAL',
+            default_action: { allow: {} },
+            visibility_config: { cloudwatch_metrics_enabled: true, metric_name: 'my-web-acl', sampled_requests_enabled: true },
+        },
+        cost: '$5.00/month',
+    },
 ];
 
 // GCP Terraform Components
@@ -161,7 +287,7 @@ const azureComponents: Component[] = [
     { id: 'azurerm_app_service', name: 'App Service', icon: '�', description: 'Web app hosting', category: 'Compute', resourceType: 'azure_app_service' },
 ];
 
-const allCategories = ['Compute', 'Storage', 'Database', 'Networking'];
+const allCategories = ['Compute', 'Storage', 'Database', 'Networking', 'Application', 'Security'];
 
 export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps) => {
     const [searchTerm, setSearchTerm] = useState('');
