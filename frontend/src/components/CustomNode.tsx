@@ -1,7 +1,8 @@
-import { memo } from 'react';
-import { Handle, Position } from 'reactflow';
+import { memo, useState, useEffect, useRef } from 'react';
+import { Handle, Position, useReactFlow } from 'reactflow';
 
 interface CustomNodeProps {
+    id: string;
     data: {
         label: string;
         type: string;
@@ -27,17 +28,61 @@ const shadowMap: Record<string, string> = {
     orange: 'shadow-orange-500/50'
 };
 
-export const CustomNode = memo(({ data }: CustomNodeProps) => {
+export const CustomNode = memo(({ id, data }: CustomNodeProps) => {
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const { deleteElements } = useReactFlow();
     const gradientClass = colorMap[data.color] || 'from-gray-500 to-gray-600';
     const shadowClass = shadowMap[data.color] || 'shadow-gray-500/50';
 
+    const handleDelete = () => {
+        deleteElements({ nodes: [{ id }] });
+        setShowMenu(false);
+    };
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setShowMenu(false);
+            }
+        };
+
+        if (showMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showMenu]);
+
     return (
-        <div className="relative">
-            {/* Input handle (top) */}
+        <div className="relative" ref={menuRef}>
+            {/* Handles on all 4 sides - much larger with hover effects */}
             <Handle
                 type="target"
                 position={Position.Top}
-                className="w-3 h-3 !bg-cyan-400"
+                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
+                style={{ top: -20 }}
+            />
+            <Handle
+                type="source"
+                position={Position.Right}
+                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
+                style={{ right: -20 }}
+            />
+            <Handle
+                type="source"
+                position={Position.Bottom}
+                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
+                style={{ bottom: -20 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Left}
+                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
+                style={{ left: -20 }}
             />
 
             {/* Node card */}
@@ -49,7 +94,36 @@ export const CustomNode = memo(({ data }: CustomNodeProps) => {
         backdrop-blur-sm
         min-w-[180px]
         transition-transform hover:scale-105
+        relative
       `}>
+                {/* Three-dot menu button */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setShowMenu(!showMenu);
+                    }}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center text-white text-xs transition-all"
+                    title="Options"
+                >
+                    ⋮
+                </button>
+
+                {/* Dropdown menu */}
+                {showMenu && (
+                    <div className="absolute top-10 right-2 bg-slate-800 border border-white/20 rounded-md shadow-lg z-50 min-w-[120px]">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete();
+                            }}
+                            className="w-full px-4 py-2 text-left text-white hover:bg-red-600 rounded-md flex items-center gap-2 text-sm"
+                        >
+                            <span>🗑️</span>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                )}
+
                 {/* Icon */}
                 <div className="text-4xl mb-2 text-center">
                     {data.icon}
@@ -65,13 +139,6 @@ export const CustomNode = memo(({ data }: CustomNodeProps) => {
                     {data.description}
                 </div>
             </div>
-
-            {/* Output handle (bottom) */}
-            <Handle
-                type="source"
-                position={Position.Bottom}
-                className="w-3 h-3 !bg-cyan-400"
-            />
         </div>
     );
 });

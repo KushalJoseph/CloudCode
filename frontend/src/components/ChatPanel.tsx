@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Message {
     id: string;
@@ -10,7 +10,7 @@ const initialMessages: Message[] = [
     {
         id: '1',
         role: 'assistant',
-        content: "Welcome to Prompt to Infrastructure! I can help you design cloud architectures, explain components, and generate Terraform code.\n\nTry asking me to:\n• Build a serverless API\n• Explain how Lambda works\n• Design a scalable web app"
+        content: "Welcome to CloudCode Designer! I can help you design cloud architectures, explain components, and generate Terraform code.\n\nTry asking me to:\n• Build a serverless API\n• Explain how Lambda works\n• Design a scalable web app"
     }
 ];
 
@@ -20,10 +20,32 @@ const suggestedPrompts = [
     'Make it scalable',
 ];
 
-export const ChatPanel = () => {
+interface ChatPanelProps {
+    initialMessage?: string;
+}
+
+export const ChatPanel = ({ initialMessage }: ChatPanelProps) => {
     const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [input, setInput] = useState('');
     const [isOpen, setIsOpen] = useState(true);
+
+    useEffect(() => {
+        if (initialMessage) {
+            const userMessage: Message = {
+                id: Date.now().toString(),
+                role: 'user',
+                content: initialMessage,
+            };
+
+            const assistantMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: `I'll help you with "${initialMessage}". Let me analyze your requirements and suggest the best cloud architecture...`,
+            };
+
+            setMessages([...initialMessages, userMessage, assistantMessage]);
+        }
+    }, [initialMessage]);
 
     const handleSend = () => {
         if (!input.trim()) return;
@@ -88,8 +110,8 @@ export const ChatPanel = () => {
                     <div
                         key={message.id}
                         className={`${message.role === 'assistant'
-                                ? 'bg-slate-800 border border-white/10'
-                                : 'bg-green-600/20 border border-green-500/30'
+                            ? 'bg-slate-800 border border-white/10'
+                            : 'bg-green-600/20 border border-green-500/30'
                             } rounded-lg p-3`}
                     >
                         <p className="text-white/90 text-sm whitespace-pre-wrap">{message.content}</p>
