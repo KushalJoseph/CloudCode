@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { ThemeToggle } from './ThemeToggle';
+import { LoginButton } from './LoginButton';
 
 import googleLogo from '../assets/google_logo.svg';
 import azureLogo from '../assets/azure_logo.svg';
@@ -151,15 +152,15 @@ export const LandingPage = () => {
                   <div className="relative">
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all border ${selectedProvider 
-                        ? 'bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white border-slate-200 dark:border-transparent' 
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all border ${selectedProvider
+                        ? 'bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white border-slate-200 dark:border-transparent'
                         : 'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-white/50 hover:bg-slate-100 dark:hover:bg-white/10 border-transparent'
-                      }`}
+                        }`}
                     >
                       {selectedProvider ? (
                         <>
                           <span>
-                              <img src={providers.find(p => p.value === selectedProvider)?.icon} alt={selectedProvider} className="w-5 h-5 object-contain" />
+                            <img src={providers.find(p => p.value === selectedProvider)?.icon} alt={selectedProvider} className="w-5 h-5 object-contain" />
                           </span>
                           <span className="font-medium">{selectedProvider}</span>
                         </>
@@ -181,7 +182,7 @@ export const LandingPage = () => {
                             className="w-full px-4 py-1.5 text-left flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                           >
                             <span className="text-lg">
-                                <img src={provider.icon} alt={provider.label} className="w-6 h-6 object-contain" />
+                              <img src={provider.icon} alt={provider.label} className="w-6 h-6 object-contain" />
                             </span>
                             <span className="text-slate-700 dark:text-white text-sm">{provider.label}</span>
                           </button>
@@ -241,6 +242,10 @@ export const LandingPage = () => {
               })}
             </div>
           )}
+
+          <div className="mt-8 flex justify-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <LoginButton />
+          </div>
         </div>
       )}
     </div>
