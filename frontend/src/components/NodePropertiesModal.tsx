@@ -26,7 +26,7 @@ export const NodePropertiesModal = ({
     isOpen,
     onClose,
     onSave,
-    onDelete
+    // onDelete - removed from destructuring as it is unused
 }: NodePropertiesModalProps) => {
     // State for form data, initialized from node.data
     const [formData, setFormData] = useState({
@@ -39,6 +39,15 @@ export const NodePropertiesModal = ({
         terraformParams: {},
         color: '',
     });
+
+    // Handle live updates
+    const handleChange = (field: string, value: any) => {
+        const newData = { ...formData, [field]: value };
+        setFormData(newData);
+        if (node) {
+            onSave(node.id, newData);
+        }
+    };
 
     // Ref for the modal container to handle clicks outside
     const modalRef = useRef<HTMLDivElement>(null);
@@ -59,21 +68,10 @@ export const NodePropertiesModal = ({
         }
     }, [node]);
 
-    // Handle saving changes
-    const handleSave = () => {
-        if (node) {
-            onSave(node.id, formData);
-        }
-        onClose();
-    };
+
 
     // Handle deleting the node
-    const handleDelete = () => {
-        if (node) {
-            onDelete(node.id);
-        }
-        onClose();
-    };
+    // Handle deleting the node - function removed as button is removed
 
     // Close modal on escape key
     useEffect(() => {
@@ -127,7 +125,7 @@ export const NodePropertiesModal = ({
                         <input
                             type="text"
                             value={formData.label}
-                            onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
+                            onChange={(e) => handleChange('label', e.target.value)}
                             className="w-full px-4 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all shadow-sm dark:shadow-inner"
                             placeholder="e.g. Primary Database"
                         />
@@ -143,8 +141,8 @@ export const NodePropertiesModal = ({
                             <input
                                 type="text"
                                 value={formData.cost}
-                                onChange={(e) => setFormData(prev => ({ ...prev, cost: e.target.value }))}
-                                className="w-full pl-8 pr-4 py-2.5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all font-mono shadow-sm dark:shadow-inner"
+                                readOnly
+                                className="w-full pl-8 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl text-slate-500 dark:text-slate-400 font-mono shadow-sm dark:shadow-inner cursor-default"
                                 placeholder="0.00"
                             />
                         </div>
@@ -168,27 +166,9 @@ export const NodePropertiesModal = ({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between gap-4">
-                    <button
-                        onClick={handleDelete}
-                        className="px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg text-sm font-medium transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-500/20"
-                    >
-                        Delete Resource
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={onClose}
-                            className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5 rounded-lg text-sm font-medium transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-500 dark:to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg text-sm font-medium shadow-md shadow-green-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            Save Changes
-                        </button>
-                    </div>
+                {/* Footer - Removed Buttons per request */}
+                <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/50 text-xs text-center text-slate-400 dark:text-slate-500">
+                    Changes are saved automatically to local state. Click "Save Changes" in the designer to persist.
                 </div>
             </div>
         </div>

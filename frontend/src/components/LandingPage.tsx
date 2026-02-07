@@ -84,8 +84,20 @@ export const LandingPage = () => {
       // Wait for API if it's still running (unlikely after 15s but possible)
       const response = await apiCall;
 
-      // Redirect
-      navigate('/designer', {
+      // Create Project in Backend
+      const newProject = await api.projects.create({
+        title: 'Untitled Project',
+        provider: selectedProvider,
+        diagram: response.diagram,
+        terraform: response.terraform,
+        chat_history: [
+          { role: 'user', content: message },
+          { role: 'assistant', content: response.refined_prompt || "Here is your generated architecture." }
+        ]
+      });
+
+      // Redirect to new project
+      navigate(`/designer/${newProject.id}`, {
         state: {
           initialMessage: message,
           cloudProvider: selectedProvider,
@@ -93,11 +105,12 @@ export const LandingPage = () => {
           edges: response.diagram.edges,
           terraformCode: response.terraform,
           refinedPrompt: response.refined_prompt,
+          chatHistory: newProject.chat_history // Pass the initialized history
         },
       });
 
     } catch (error) {
-      console.error('Failed to generate infrastructure:', error);
+      console.error('Failed to generate or save project:', error);
       setLoadingStep(0); // Reset on error
     }
   };

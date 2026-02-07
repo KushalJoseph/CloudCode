@@ -24,6 +24,8 @@ interface DiagramCanvasProps {
     onConnect: (params: Connection) => void;
     setNodes: any;
     setEdges: any;
+    onClear?: () => void;
+    onNodeDataChange?: (id: string, newData: any) => void;
 }
 
 export const DiagramCanvas = ({
@@ -33,7 +35,9 @@ export const DiagramCanvas = ({
     onEdgesChange,
     onConnect,
     setNodes,
-    setEdges
+    setEdges,
+    onClear,
+    onNodeDataChange
 }: DiagramCanvasProps) => {
     // Removed local state hooks as we now use props
 
@@ -136,12 +140,6 @@ export const DiagramCanvas = ({
         }
     };
 
-    const handleClearCanvas = () => {
-        setNodes([]);
-        setEdges([]);
-        setSelectedEdge(null);
-    };
-
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedNode(null);
@@ -190,13 +188,13 @@ export const DiagramCanvas = ({
                     fitView
                     className="bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
                 >
-                    <Background 
-                        variant={BackgroundVariant.Dots} 
-                        gap={12} 
-                        size={1} 
-                        color={theme === 'dark' ? '#1e293b' : '#cbd5e1'} 
+                    <Background
+                        variant={BackgroundVariant.Dots}
+                        gap={12}
+                        size={1}
+                        color={theme === 'dark' ? '#1e293b' : '#cbd5e1'}
                     />
-                    <ZoomControls onClear={handleClearCanvas} />
+                    <ZoomControls onClear={onClear || (() => setNodes([]))} />
                     {selectedEdge && (
                         <EdgeDeleteButton onDelete={handleDeleteEdge} />
                     )}
@@ -221,27 +219,29 @@ export const DiagramCanvas = ({
                     }
                 } : null}
                 onSave={(id, data) => {
-                    // Handle save logic - update nodes state
-                    setNodes((nds: Node[]) => nds.map((node) => {
-                        if (node.id === id) {
-                            return {
-                                ...node,
-                                data: {
-                                    ...node.data,
-                                    ...data
-                                }
-                            };
-                        }
-                        return node;
-                    }));
+                    if (onNodeDataChange) {
+                        onNodeDataChange(id, data);
+                    } else {
+                        // Fallback to local update if prop not provided (though it should be)
+                        setNodes((nds: Node[]) => nds.map((node) => {
+                            if (node.id === id) {
+                                return {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        ...data
+                                    }
+                                };
+                            }
+                            return node;
+                        }));
+                    }
                 }}
                 onDelete={(id) => {
                     setNodes((nds: Node[]) => nds.filter((n) => n.id !== id));
                     setEdges((eds: any[]) => eds.filter((e) => e.source !== id && e.target !== id));
                 }}
             />
-
-
         </div>
     );
 };
@@ -261,7 +261,7 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
 
             // Calculate the bounds of all nodes
             const nodesBounds = getRectOfNodes(nodes);
-            
+
             // Calculate a transform that centers the nodes in the viewport
             // and adds some padding
             const transform = getTransformForBounds(
@@ -276,7 +276,7 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
             // Select the viewport element (ReactFlow specific class)
             // We use querySelector inside the react-flow container
             const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
-            
+
             if (!viewport) return;
 
             const dataUrl = await toPng(viewport, {
@@ -300,11 +300,10 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
         }
     };
 
-    const buttonClass = `w-10 h-10 rounded-lg font-bold flex items-center justify-center transition-all hover:scale-105 border ${
-        theme === 'dark' 
-        ? 'bg-slate-800 hover:bg-slate-700 border-white/20 text-white' 
-        : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700 shadow-sm'
-    }`;
+    const buttonClass = `w-10 h-10 rounded-lg font-bold flex items-center justify-center transition-all hover:scale-105 border ${theme === 'dark'
+            ? 'bg-slate-800 hover:bg-slate-700 border-white/20 text-white'
+            : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700 shadow-sm'
+        }`;
 
     return (
         <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-10">

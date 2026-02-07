@@ -9,11 +9,26 @@ if sys.platform == 'win32':
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import infrastructure, learn
+from contextlib import asynccontextmanager
+
+from app.api import infrastructure, projects, learn
+from app.core.database import connect_to_mongodb, close_mongodb_connection
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager - startup and shutdown events."""
+    # Startup
+    await connect_to_mongodb()
+    yield
+    # Shutdown
+    await close_mongodb_connection()
+
 
 app = FastAPI(
     title="Prompt to Infrastructure API",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # CORS
@@ -37,6 +52,12 @@ app.include_router(
     learn.router,
     prefix="/api/learn",
     tags=["learn"]
+)
+
+app.include_router(
+    projects.router,
+    prefix="/api/projects",
+    tags=["projects"]
 )
 
 @app.get("/health")

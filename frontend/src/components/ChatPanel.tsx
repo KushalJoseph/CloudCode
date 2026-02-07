@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 
-interface Message {
+export interface Message {
     id: string;
     role: 'user' | 'assistant';
     content: string;
 }
 
-const initialMessages: Message[] = [
+export const initialMessages: Message[] = [
     {
         id: '1',
         role: 'assistant',
@@ -27,10 +27,11 @@ interface ChatPanelProps {
     isLoading?: boolean;
     isOpen: boolean;
     onClose: () => void;
+    messages: Message[];
+    setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-export const ChatPanel = ({ initialMessage, refinedPrompt, onSendMessage, isLoading = false, isOpen, onClose }: ChatPanelProps) => {
-    const [messages, setMessages] = useState<Message[]>(initialMessages);
+export const ChatPanel = ({ initialMessage, refinedPrompt, onSendMessage, isLoading = false, isOpen, onClose, messages, setMessages }: ChatPanelProps) => {
     const [input, setInput] = useState('');
 
     useEffect(() => {
@@ -124,9 +125,9 @@ export const ChatPanel = ({ initialMessage, refinedPrompt, onSendMessage, isLoad
         setInput(prompt);
     };
 
-// ... imports and interfaces remain the same
+    // ... imports and interfaces remain the same
 
-// ... ChatPanel component logic remains the same
+    // ... ChatPanel component logic remains the same
 
     if (!isOpen) return null;
 

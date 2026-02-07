@@ -48,6 +48,39 @@ export interface UpdateResponse {
     warnings?: string[];
 }
 
+// Project types for persistence
+export interface Project {
+    id: string;
+    title: string;
+    description: string;
+    provider: 'AWS' | 'GCP' | 'Azure';
+    user_id?: string;
+    diagram?: Diagram;
+    terraform?: string;
+    chat_history?: any[];
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProjectCreate {
+    title: string;
+    description?: string;
+    provider: string;
+    user_id?: string;
+    diagram?: Diagram;
+    terraform?: string;
+    chat_history?: any[];
+}
+
+export interface ProjectUpdate {
+    title?: string;
+    description?: string;
+    provider?: string;
+    diagram?: Diagram;
+    terraform?: string;
+    chat_history?: any[];
+}
+
 export const api = {
     generateInfrastructure: async (prompt: string, cloudProvider: string, currentTerraform?: string, currentDiagram?: any): Promise<GenerateResponse> => {
         try {
@@ -91,6 +124,33 @@ export const api = {
             console.error('Error in learn chat:', error);
             throw error;
         }
+    },
+
+    // Projects API
+    projects: {
+        list: async (userId?: string): Promise<Project[]> => {
+            const params = userId ? { user_id: userId } : {};
+            const response = await axios.get<Project[]>(`${API_URL}/projects`, { params });
+            return response.data;
+        },
+
+        get: async (projectId: string): Promise<Project> => {
+            const response = await axios.get<Project>(`${API_URL}/projects/${projectId}`);
+            return response.data;
+        },
+
+        create: async (data: ProjectCreate): Promise<Project> => {
+            const response = await axios.post<Project>(`${API_URL}/projects`, data);
+            return response.data;
+        },
+
+        update: async (projectId: string, data: ProjectUpdate): Promise<Project> => {
+            const response = await axios.put<Project>(`${API_URL}/projects/${projectId}`, data);
+            return response.data;
+        },
+
+        delete: async (projectId: string): Promise<void> => {
+            await axios.delete(`${API_URL}/projects/${projectId}`);
+        }
     }
 };
-

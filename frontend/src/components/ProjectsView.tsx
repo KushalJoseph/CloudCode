@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import awsLogo from '../assets/aws_logo.png';
 import gcpLogo from '../assets/google_logo.svg';
 import azureLogo from '../assets/azure_logo.svg';
+import { api } from '../services/api';
+import { ThemeToggle } from './ThemeToggle';
+import type { Project as APIProject } from '../services/api';
 
 type CloudProvider = 'AWS' | 'GCP' | 'Azure';
 
+// Use local Project type that maps from API response
 interface Project {
     id: string;
     title: string;
@@ -15,10 +19,15 @@ interface Project {
     updatedAt: string;
 }
 
-const STORAGE_KEY = 'cloudcode-projects';
-
-// Utility to generate unique IDs
-const generateId = () => `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+// Helper to convert API project to local format
+const fromAPIProject = (p: APIProject): Project => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    provider: p.provider as CloudProvider,
+    createdAt: new Date(p.created_at).toLocaleDateString(),
+    updatedAt: new Date(p.updated_at).toLocaleDateString(),
+});
 
 // Cloud provider options
 const providers: Array<{ value: CloudProvider; label: string; icon: string }> = [
@@ -49,22 +58,18 @@ export const ProjectsView = () => {
     const [newProvider, setNewProvider] = useState<CloudProvider>('AWS');
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
-    // Load projects from localStorage
+    // Load projects from backend API
     useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
+        const loadProjects = async () => {
             try {
-                setProjects(JSON.parse(saved));
+                const apiProjects = await api.projects.list();
+                setProjects(apiProjects.map(fromAPIProject));
             } catch (e) {
-                console.error('Failed to parse saved projects:', e);
+                console.error('Failed to load projects:', e);
             }
-        }
+        };
+        loadProjects();
     }, []);
-
-    // Save projects to localStorage
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    }, [projects]);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -78,67 +83,72 @@ export const ProjectsView = () => {
         project.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleCreateProject = () => {
+    const handleCreateProject = async () => {
         if (!newTitle.trim()) return;
 
-        const now = new Date().toLocaleDateString();
-        const newProject: Project = {
-            id: generateId(),
-            title: newTitle.trim(),
-            description: newDescription.trim() || 'No description',
-            provider: newProvider,
-            createdAt: now,
-            updatedAt: now,
-        };
+        try {
+            const created = await api.projects.create({
+                title: newTitle.trim(),
+                description: newDescription.trim() || 'No description',
+                provider: newProvider,
+            });
 
-        setProjects(prev => [newProject, ...prev]);
-        setShowNewProjectModal(false);
-        resetForm();
+            setProjects(prev => [fromAPIProject(created), ...prev]);
+            setShowNewProjectModal(false);
+            resetForm();
 
-        // Navigate to designer with project info
-        navigate('/designer', {
-            state: {
-                projectName: newProject.title,
-                cloudProvider: newProject.provider,
-                nodes: [],
-                edges: [],
-            },
-        });
+            // Navigate to designer with project info
+            navigate('/designer', {
+                state: {
+                    projectId: created.id,
+                    projectName: created.title,
+                    cloudProvider: created.provider,
+                    nodes: [],
+                    edges: [],
+                },
+            });
+        } catch (e) {
+            console.error('Failed to create project:', e);
+        }
     };
 
-    const handleOpenProject = (project: Project) => {
-        navigate('/designer', {
-            state: {
-                projectName: project.title,
-                cloudProvider: project.provider,
-                nodes: [],
-                edges: [],
-            },
-        });
+    const handleOpenProject = async (project: Project) => {
+        try {
+            // Navigate to designer with project ID in URL
+            navigate(`/designer/${project.id}`);
+        } catch (e) {
+            console.error('Failed to open project:', e);
+        }
     };
 
-    const handleDeleteProject = () => {
+    const handleDeleteProject = async () => {
         if (!selectedProject) return;
         const expectedText = `delete ${selectedProject.title}`;
         if (deleteConfirmText !== expectedText) return;
 
-        setProjects(prev => prev.filter(p => p.id !== selectedProject.id));
-        setShowDeleteModal(false);
-        setSelectedProject(null);
-        setDeleteConfirmText('');
+        try {
+            await api.projects.delete(selectedProject.id);
+            setProjects(prev => prev.filter(p => p.id !== selectedProject.id));
+            setShowDeleteModal(false);
+            setSelectedProject(null);
+            setDeleteConfirmText('');
+        } catch (e) {
+            console.error('Failed to delete project:', e);
+        }
     };
 
-    const handleDuplicateProject = (project: Project) => {
-        const now = new Date().toLocaleDateString();
-        const duplicate: Project = {
-            ...project,
-            id: generateId(),
-            title: `Copy of ${project.title}`,
-            createdAt: now,
-            updatedAt: now,
-        };
-        setProjects(prev => [duplicate, ...prev]);
-        setActiveMenuId(null);
+    const handleDuplicateProject = async (project: Project) => {
+        try {
+            const created = await api.projects.create({
+                title: `Copy of ${project.title}`,
+                description: project.description,
+                provider: project.provider,
+            });
+            setProjects(prev => [fromAPIProject(created), ...prev]);
+            setActiveMenuId(null);
+        } catch (e) {
+            console.error('Failed to duplicate project:', e);
+        }
     };
 
     const openDeleteModal = (project: Project) => {
@@ -165,9 +175,12 @@ export const ProjectsView = () => {
     return (
         <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
             {/* Header */}
-            <div className="p-8 border-b border-slate-200 dark:border-white/10">
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Your Projects</h1>
-                <p className="text-slate-500 dark:text-white/60 text-sm">Create, manage, and design your cloud architectures</p>
+            <div className="p-8 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Your Projects</h1>
+                    <p className="text-slate-500 dark:text-white/60 text-sm">Create, manage, and design your cloud architectures</p>
+                </div>
+                <ThemeToggle />
             </div>
 
             {/* Controls */}
@@ -237,7 +250,7 @@ export const ProjectsView = () => {
                             <div
                                 key={project.id}
                                 onClick={() => handleOpenProject(project)}
-                                className="group relative bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-green-500/50 hover:shadow-lg hover:shadow-green-900/10 transition-all cursor-pointer"
+                                className="group relative bg-white dark:bg-slate-800/40 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-xl p-6 hover:border-green-500/50 hover:shadow-2xl hover:shadow-green-500/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                             >
                                 {/* Three Dot Menu */}
                                 <div className="absolute top-4 right-4">
@@ -298,10 +311,19 @@ export const ProjectsView = () => {
                                 <div className="space-y-2 text-center">
                                     <h3 className="text-slate-900 dark:text-white font-semibold text-lg truncate">{project.title}</h3>
                                     <p className="text-slate-500 dark:text-white/50 text-sm line-clamp-2 min-h-[2.5rem]">{project.description}</p>
-                                    <div className="flex items-center justify-center gap-2 pt-2">
-                                        <span className="px-2.5 py-1 bg-green-50 dark:bg-green-600/20 border border-green-200 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 text-xs font-medium">
-                                            {project.provider}
-                                        </span>
+                                    <div className="flex items-center justify-center pt-4">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleOpenProject(project);
+                                            }}
+                                            className="w-full py-2 bg-slate-100 dark:bg-white/5 hover:bg-green-600 dark:hover:bg-green-600/20 text-slate-600 dark:text-white/70 hover:text-white dark:hover:text-green-400 border border-slate-200 dark:border-white/10 hover:border-green-500/50 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 group-hover:bg-green-600 group-hover:text-white group-hover:border-green-500"
+                                        >
+                                            Open Project
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
