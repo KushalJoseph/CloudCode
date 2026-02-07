@@ -18,7 +18,9 @@ async def generate(request: GenerateRequest):
     try:
         result = await generate_infrastructure(
             user_prompt=request.prompt,
-            cloud_provider=request.cloud_provider
+            cloud_provider=request.cloud_provider,
+            current_terraform=request.current_terraform,
+            current_diagram=request.current_diagram
         )
         
         return GenerateResponse(**result)

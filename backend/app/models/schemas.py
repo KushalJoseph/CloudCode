@@ -4,6 +4,8 @@ from typing import List, Dict, Any, Optional
 class GenerateRequest(BaseModel):
     prompt: str = Field(..., description="User's infrastructure description")
     cloud_provider: str = Field(default="aws", description="aws|gcp|azure")
+    current_terraform: Optional[str] = Field(default=None, description="Existing Terraform code if refining")
+    current_diagram: Optional[Dict[str, Any]] = Field(default=None, description="Existing diagram JSON if refining")
 
 class NodeData(BaseModel):
     label: str
@@ -19,7 +21,7 @@ class Node(BaseModel):
     id: str
     type: str
     data: NodeData
-    position: Dict[str, int]
+    position: Dict[str, float]
 
 class Edge(BaseModel):
     id: str

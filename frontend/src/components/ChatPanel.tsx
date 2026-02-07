@@ -23,9 +23,11 @@ const suggestedPrompts = [
 interface ChatPanelProps {
     initialMessage?: string;
     refinedPrompt?: string;
+    onSendMessage?: (message: string) => Promise<any>;
+    isLoading?: boolean;
 }
 
-export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => {
+export const ChatPanel = ({ initialMessage, refinedPrompt, onSendMessage, isLoading = false }: ChatPanelProps) => {
     const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [input, setInput] = useState('');
     const [isOpen, setIsOpen] = useState(true);
@@ -50,7 +52,8 @@ export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => 
                 newMessages.push({
                     id: (Date.now() + 2).toString(),
                     role: 'assistant',
-                    content: `Here is the refined prompt based on your request:\n\n${refinedPrompt}`,
+                    content: `Here is what I built for you based on your request. Please see the diagram for more details: \n\n${refinedPrompt} \n\n` +
+                        "Please let me know if you'd like to change or add something to your architecture design.",
                 });
             }
 
@@ -58,8 +61,8 @@ export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => 
         }
     }, [initialMessage, refinedPrompt]);
 
-    const handleSend = () => {
-        if (!input.trim()) return;
+    const handleSend = async () => {
+        if (!input.trim() || isLoading) return;
 
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -67,14 +70,46 @@ export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => 
             content: input,
         };
 
-        const assistantMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: `I'll help you with "${input}". Let me analyze your architecture and suggest the best approach...`,
-        };
-
-        setMessages([...messages, userMessage, assistantMessage]);
+        setMessages(prev => [...prev, userMessage]);
         setInput('');
+
+        if (onSendMessage) {
+            try {
+                // Add temporary thinking message
+                const thinkingId = (Date.now() + 1).toString();
+                setMessages(prev => [...prev, {
+                    id: thinkingId,
+                    role: 'assistant',
+                    content: 'Generating updates...'
+                }]);
+
+                const response = await onSendMessage(input);
+
+                // Remove thinking message and add actual response
+                setMessages(prev => {
+                    const filtered = prev.filter(m => m.id !== thinkingId);
+                    return [...filtered, {
+                        id: (Date.now() + 2).toString(),
+                        role: 'assistant',
+                        content: `Updated infrastructure based on: "${input}"\n\nRefined Plan:\n${response.refined_prompt || 'Updates applied.'}`
+                    }];
+                });
+            } catch (error) {
+                setMessages(prev => [...prev, {
+                    id: (Date.now() + 3).toString(),
+                    role: 'assistant',
+                    content: "Sorry, I encountered an error while updating the infrastructure."
+                }]);
+            }
+        } else {
+            // Fallback for simulation/testing without backend
+            const assistantMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: `I'll help you with "${input}". Let me analyze your architecture and suggest the best approach...`,
+            };
+            setMessages(prev => [...prev, assistantMessage]);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -186,12 +221,16 @@ export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => 
                     />
                     <button
                         onClick={handleSend}
-                        disabled={!input.trim()}
+                        disabled={!input.trim() || isLoading}
                         className="p-2 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 disabled:from-slate-700 disabled:to-slate-800 disabled:text-white/20 text-white rounded-xl shadow-lg shadow-emerald-900/20 transition-all hover:scale-105 active:scale-95 mb-0.5"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                        </svg>
+                        {isLoading ? (
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                            </svg>
+                        )}
                     </button>
                 </div>
                 <div className="text-center mt-2">

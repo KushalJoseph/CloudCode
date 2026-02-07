@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useNodesState, useEdgesState, addEdge } from 'reactflow';
+import type { Connection } from 'reactflow';
 import { ComponentsPanel } from './ComponentsPanel';
 import { DiagramCanvas } from './DiagramCanvas';
 import { ChatPanel } from './ChatPanel';
 import { ProjectsView } from './ProjectsView';
 import { AWSLogo, GCPLogo, AzureLogo } from './CloudLogos';
+import { api } from '../services/api';
 
 interface LocationState {
     initialMessage?: string;
@@ -21,6 +24,12 @@ export const DesignerView = () => {
     const cloudProvider = state?.cloudProvider || 'AWS';
     const [activeTab, setActiveTab] = useState<'designer' | 'projects'>('designer');
 
+    // Lifted State
+    const [nodes, setNodes, onNodesChange] = useNodesState(state?.nodes || []);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(state?.edges || []);
+    const [terraformCode, setTerraformCode] = useState(state?.terraformCode || '');
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         // Log the initial message for debugging
         if (state?.initialMessage) {
@@ -28,6 +37,54 @@ export const DesignerView = () => {
             console.log('Selected cloud provider:', state.cloudProvider);
         }
     }, [state]);
+
+    const onConnect = useCallback(
+        (params: Connection) => setEdges((eds) => addEdge({
+            ...params,
+            type: 'smoothstep',
+            animated: true,
+            style: {
+                stroke: '#06b6d4',
+                strokeWidth: 2.5,
+            },
+        }, eds)),
+        [setEdges],
+    );
+
+    const handleSendMessage = async (message: string) => {
+        setIsLoading(true);
+        try {
+            // Construct current diagram context
+            const currentDiagram = {
+                nodes: nodes,
+                edges: edges
+            };
+
+            const response = await api.generateInfrastructure(
+                message,
+                cloudProvider.toLowerCase(),
+                terraformCode,
+                currentDiagram
+            );
+
+            // Update state with new response
+            // Note: We might want to merge or replace. For now, replacing is safer for consistency with backend generation.
+            if (response.diagram) {
+                setNodes(response.diagram.nodes);
+                setEdges(response.diagram.edges);
+            }
+            if (response.terraform) {
+                setTerraformCode(response.terraform);
+            }
+
+            return response;
+        } catch (error) {
+            console.error("Failed to generate infrastructure:", error);
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="h-screen flex flex-col bg-slate-950">
@@ -81,11 +138,24 @@ export const DesignerView = () => {
 
                     {/* Center - Diagram Canvas */}
                     <div className="flex-1 relative">
-                        <DiagramCanvas initialNodes={state?.nodes} initialEdges={state?.edges} />
+                        <DiagramCanvas
+                            nodes={nodes}
+                            edges={edges}
+                            onNodesChange={onNodesChange}
+                            onEdgesChange={onEdgesChange}
+                            onConnect={onConnect}
+                            setNodes={setNodes}
+                            setEdges={setEdges}
+                        />
                     </div>
 
                     {/* Right Panel - Chat */}
-                    <ChatPanel initialMessage={state?.initialMessage} refinedPrompt={state?.refinedPrompt} />
+                    <ChatPanel
+                        initialMessage={state?.initialMessage}
+                        refinedPrompt={state?.refinedPrompt}
+                        onSendMessage={handleSendMessage}
+                        isLoading={isLoading}
+                    />
                 </div>
             ) : (
                 /* Projects View */

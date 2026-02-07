@@ -1,11 +1,8 @@
 import { useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
     Background,
-    useNodesState,
-    useEdgesState,
     ConnectionMode,
     BackgroundVariant,
-    addEdge,
     useReactFlow,
 } from 'reactflow';
 import type { Node, Connection } from 'reactflow';
@@ -13,43 +10,37 @@ import 'reactflow/dist/style.css';
 
 import { CustomNode } from './CustomNode';
 import { NodePropertiesModal } from './NodePropertiesModal';
-import { initialNodes, initialEdges } from '../data/diagramNodes';
 
 const nodeTypes = {
     custom: CustomNode
 };
 
 interface DiagramCanvasProps {
-    initialNodes?: Node[];
-    initialEdges?: any[];
+    nodes: Node[];
+    edges: any[];
+    onNodesChange: any;
+    onEdgesChange: any;
+    onConnect: (params: Connection) => void;
+    setNodes: any;
+    setEdges: any;
 }
 
-export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges }: DiagramCanvasProps) => {
-    const [nodes, setNodes, onNodesChange] = useNodesState(propNodes || initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(propEdges || initialEdges);
-
-    // Update nodes/edges if props change (e.g. new generation)
-    useEffect(() => {
-        if (propNodes) setNodes(propNodes);
-        if (propEdges) setEdges(propEdges);
-    }, [propNodes, propEdges, setNodes, setEdges]);
+export const DiagramCanvas = ({
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    setNodes,
+    setEdges
+}: DiagramCanvasProps) => {
+    // Removed local state hooks as we now use props
 
     const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string; resourceType?: string; terraformParams?: any; cost?: string } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
 
-    const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge({
-            ...params,
-            type: 'smoothstep',
-            animated: true,
-            style: {
-                stroke: '#06b6d4',
-                strokeWidth: 2.5,
-            },
-        }, eds)),
-        [setEdges],
-    );
+    // onConnect is now passed as prop
 
     const defaultEdgeOptions = {
         type: 'smoothstep' as const,
@@ -93,7 +84,7 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
                 },
             };
 
-            setNodes((nds) => [...nds, newNode]);
+            setNodes((nds: Node[]) => [...nds, newNode]);
         },
         [setNodes]
     );
@@ -120,7 +111,7 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
 
     // Ensure all nodes have the onEdit callback
     useEffect(() => {
-        setNodes((nds) =>
+        setNodes((nds: Node[]) =>
             nds.map((node) => ({
                 ...node,
                 data: {
@@ -147,7 +138,7 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
 
     const handleDeleteEdge = () => {
         if (selectedEdge) {
-            setEdges((eds) => eds.filter((e) => e.id !== selectedEdge));
+            setEdges((eds: any[]) => eds.filter((e) => e.id !== selectedEdge));
             setSelectedEdge(null);
         }
     };
