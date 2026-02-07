@@ -112,7 +112,7 @@ export const LandingPage = () => {
           {loadingStep === 0 ? (
             /* Chat Interface */
             <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-1 shadow-2xl relative">
-              <div className="relative bg-slate-950/50 rounded-[22px] overflow-hidden">
+              <div className="relative bg-slate-950/50 rounded-[22px]">
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -122,7 +122,7 @@ export const LandingPage = () => {
                 />
 
                 {/* Bottom Bar with Provider Selector and Send */}
-                <div className="absolute bottom-4 right-4 left-4 flex justify-between items-center">
+                <div className="absolute bottom-4 right-4 left-4 flex justify-between items-center z-10">
                   <div className="relative">
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -148,9 +148,9 @@ export const LandingPage = () => {
                               setSelectedProvider(provider.value);
                               setIsDropdownOpen(false);
                             }}
-                            className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-white/5 transition-colors"
+                            className="w-full px-4 py-1.5 text-left flex items-center gap-3 hover:bg-white/5 transition-colors"
                           >
-                            <span className="text-xl">{provider.icon}</span>
+                            <span className="text-lg">{provider.icon}</span>
                             <span className="text-white text-sm">{provider.label}</span>
                           </button>
                         ))}
@@ -162,8 +162,8 @@ export const LandingPage = () => {
                     onClick={handleSend}
                     disabled={!message.trim() || !selectedProvider}
                     className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${message.trim() && selectedProvider
-                        ? 'bg-white text-black hover:scale-105 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]'
-                        : 'bg-white/10 text-white/20 cursor-not-allowed'
+                      ? 'bg-white text-black hover:scale-105 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]'
+                      : 'bg-white/10 text-white/20 cursor-not-allowed'
                       }`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -184,8 +184,8 @@ export const LandingPage = () => {
                   <div
                     key={step.id}
                     className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-500 ${isActive || isCompleted
-                        ? 'bg-slate-900/80 border-white/10 translate-x-0 opacity-100'
-                        : 'bg-transparent border-transparent -translate-x-4 opacity-30'
+                      ? 'bg-slate-900/80 border-white/10 translate-x-0 opacity-100'
+                      : 'bg-transparent border-transparent -translate-x-4 opacity-30'
                       }`}
                   >
                     <div className="w-8 h-8 flex items-center justify-center">
