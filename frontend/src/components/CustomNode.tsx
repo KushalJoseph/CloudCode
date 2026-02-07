@@ -11,27 +11,36 @@ interface NodeData {
 }
 
 const colorMap: Record<string, string> = {
-    cyan: 'from-cyan-500 to-blue-500',
-    blue: 'from-blue-500 to-indigo-500',
-    purple: 'from-purple-500 to-pink-500',
-    green: 'from-green-500 to-emerald-500',
-    orange: 'from-orange-500 to-red-500'
+    cyan: 'border-cyan-500/50 hover:border-cyan-400',
+    blue: 'border-blue-500/50 hover:border-blue-400',
+    purple: 'border-purple-500/50 hover:border-purple-400',
+    green: 'border-emerald-500/50 hover:border-emerald-400',
+    orange: 'border-orange-500/50 hover:border-orange-400'
 };
 
-const shadowMap: Record<string, string> = {
-    cyan: 'shadow-cyan-500/50',
-    blue: 'shadow-blue-500/50',
-    purple: 'shadow-purple-500/50',
-    green: 'shadow-green-500/50',
-    orange: 'shadow-orange-500/50'
+const glowMap: Record<string, string> = {
+    cyan: 'shadow-[0_0_20px_-5px_rgba(6,182,212,0.3)]',
+    blue: 'shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]',
+    purple: 'shadow-[0_0_20px_-5px_rgba(168,85,247,0.3)]',
+    green: 'shadow-[0_0_20px_-5px_rgba(16,185,129,0.3)]',
+    orange: 'shadow-[0_0_20px_-5px_rgba(249,115,22,0.3)]'
+};
+
+const iconColorMap: Record<string, string> = {
+    cyan: 'text-cyan-400',
+    blue: 'text-blue-400',
+    purple: 'text-purple-400',
+    green: 'text-emerald-400',
+    orange: 'text-orange-400'
 };
 
 export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) => {
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const { deleteElements } = useReactFlow();
-    const gradientClass = colorMap[data.color] || 'from-gray-500 to-gray-600';
-    const shadowClass = shadowMap[data.color] || 'shadow-gray-500/50';
+    const borderClass = colorMap[data.color] || 'border-slate-600';
+    const glowClass = glowMap[data.color] || '';
+    const iconClass = iconColorMap[data.color] || 'text-slate-400';
 
     const handleDelete = () => {
         deleteElements({ nodes: [{ id }] });
@@ -63,44 +72,45 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 position={Position.Top}
                 id="top"
                 isConnectable={true}
-                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
-                style={{ top: -20 }}
+                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
+                style={{ top: -16 }}
             />
             <Handle
                 type="source"
                 position={Position.Right}
                 id="right"
                 isConnectable={true}
-                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
-                style={{ right: -20 }}
+                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
+                style={{ right: -16 }}
             />
             <Handle
                 type="source"
                 position={Position.Bottom}
                 id="bottom"
                 isConnectable={true}
-                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
-                style={{ bottom: -20 }}
+                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
+                style={{ bottom: -16 }}
             />
             <Handle
                 type="source"
                 position={Position.Left}
                 id="left"
                 isConnectable={true}
-                className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
-                style={{ left: -20 }}
+                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
+                style={{ left: -16 }}
             />
 
             {/* Node card */}
             <div className={`
-px-6 py-4 rounded-lg 
-bg-gradient-to-br ${gradientClass}
-shadow-lg ${shadowClass}
-        border border-white/20
-min-w-[180px]
-transition-transform hover:scale-105
-relative
-    `}>
+                px-6 py-4 rounded-xl
+                bg-slate-900/90 backdrop-blur-md
+                border-2 ${borderClass}
+                ${glowClass}
+                min-w-[180px]
+                transition-all duration-300 hover:scale-[1.02]
+                relative
+                group
+            `}>
                 {/* Three-dot menu button */}
                 <button
                     onClick={(e) => {
@@ -143,17 +153,17 @@ relative
                 )}
 
                 {/* Icon */}
-                <div className="text-4xl mb-2 text-center">
+                <div className={`text-4xl mb-2 text-center ${iconClass} transition-colors duration-300`}>
                     {data.icon}
                 </div>
 
                 {/* Label */}
-                <div className="text-white font-semibold text-center mb-1">
+                <div className="text-slate-200 font-semibold text-center mb-1 transition-colors duration-300 group-hover:text-white">
                     {data.label}
                 </div>
 
                 {/* Description */}
-                <div className="text-white/80 text-xs text-center">
+                <div className="text-slate-400 text-xs text-center transition-colors duration-300 group-hover:text-slate-300">
                     {data.description}
                 </div>
             </div>
