@@ -2,6 +2,9 @@ from app.services.dedalus_client import dedalus_client
 from app.core.system_prompt import get_infrastructure_system_prompt
 import re
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 async def generate_infrastructure(user_prompt: str, cloud_provider: str) -> dict:
     """
@@ -45,6 +48,8 @@ def parse_llm_response(response: str) -> dict:
     <diagram>...</diagram>
     """
     
+    logger.info("--- PARSING RESPONSE ---")
+    
     # Extract refined prompt
     refined_match = re.search(
         r'<refined>(.*?)</refined>', 
@@ -52,6 +57,7 @@ def parse_llm_response(response: str) -> dict:
         re.DOTALL
     )
     refined_prompt = refined_match.group(1).strip() if refined_match else ""
+    logger.info(f"Found Refined Prompt: {bool(refined_match)}")
     
     # Extract Terraform
     terraform_match = re.search(
@@ -60,6 +66,7 @@ def parse_llm_response(response: str) -> dict:
         re.DOTALL
     )
     terraform_code = terraform_match.group(1).strip() if terraform_match else ""
+    logger.info(f"Found Terraform Code: {bool(terraform_match)}")
     
     # Extract diagram JSON
     diagram_match = re.search(
@@ -68,13 +75,17 @@ def parse_llm_response(response: str) -> dict:
         re.DOTALL
     )
     
+    logger.info(f"Found Diagram JSON: {bool(diagram_match)}")
+    
     diagram = {"nodes": [], "edges": []}
     if diagram_match:
         diagram_str = diagram_match.group(1).strip()
         try:
             diagram = json.loads(diagram_str)
+            logger.info(f"Successfully parsed diagram JSON with {len(diagram.get('nodes', []))} nodes")
         except json.JSONDecodeError as e:
-            print(f"Failed to parse diagram JSON: {e}")
+            logger.error(f"Failed to parse diagram JSON: {e}")
+            logger.debug(f"Raw diagram string: {diagram_str[:100]}...")
             # In a real app, you might want to retry or sanitize the JSON
             # For now, return empty diagram on parse failure
     
