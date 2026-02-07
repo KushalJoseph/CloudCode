@@ -1,4 +1,4 @@
-import type { Node, Edge } from 'reactflow';
+import { type Node, type Edge, MarkerType } from 'reactflow';
 
 // Get the handle position based on relative node positions
 export const getSmartEdge = (sourceNode: Node, targetNode: Node) => {
@@ -53,17 +53,32 @@ export const applySmartRouting = (nodes: Node[], edges: Edge[]): Edge[] => {
         const sourceNode = nodes.find(n => n.id === edge.source);
         const targetNode = nodes.find(n => n.id === edge.target);
 
-        if (!sourceNode || !targetNode) return edge;
+        // Default style for all edges
+        const edgeStyle = {
+            style: {
+                stroke: '#06b6d4',
+                strokeWidth: 2.5,
+            },
+            markerEnd: {
+                type: MarkerType.ArrowClosed,
+                color: '#06b6d4',
+            },
+            type: 'smoothstep',
+            animated: true,
+        };
+
+        if (!sourceNode || !targetNode) {
+            return {
+                ...edge,
+                ...edgeStyle
+            };
+        }
 
         const { sourceHandle, targetHandle } = getSmartEdge(sourceNode, targetNode);
 
-        // Only update if changed
-        if (edge.sourceHandle === sourceHandle && edge.targetHandle === targetHandle) {
-            return edge;
-        }
-
         return {
             ...edge,
+            ...edgeStyle,
             sourceHandle,
             targetHandle
         };

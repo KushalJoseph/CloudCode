@@ -373,8 +373,11 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
                                                         className="w-full h-full object-contain"
                                                         onError={(e) => {
                                                             e.currentTarget.style.display = 'none';
-                                                            e.currentTarget.parentElement!.innerHTML = `<span class="text-xl">${component.icon}</span>`;
-                                                            e.currentTarget.parentElement!.className = "w-8 h-8 flex-shrink-0 flex items-center justify-center";
+                                                            const parent = e.currentTarget.parentElement;
+                                                            if (parent) {
+                                                                parent.innerHTML = `<span class="text-xl">${component.icon}</span>`;
+                                                                parent.className = "w-8 h-8 flex-shrink-0 flex items-center justify-center";
+                                                            }
                                                         }}
                                                     />
                                                 </div>

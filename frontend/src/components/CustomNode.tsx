@@ -78,7 +78,45 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
 
     return (
         <div className="relative" ref={menuRef}>
-            {/* Handles on all 4 sides - Source */}
+            {/* Handles on all 4 sides - Target (Rendered first so they are behind Source) */}
+            <Handle
+                type="target"
+                position={Position.Top}
+                id="target-top"
+                isConnectable={true}
+                isConnectableStart={false}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ top: -6 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Right}
+                id="target-right"
+                isConnectable={true}
+                isConnectableStart={false}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ right: -6 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Bottom}
+                id="target-bottom"
+                isConnectable={true}
+                isConnectableStart={false}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ bottom: -6 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Left}
+                id="target-left"
+                isConnectable={true}
+                isConnectableStart={false}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ left: -6 }}
+            />
+
+            {/* Handles on all 4 sides - Source (Rendered last so they are on top & clickable) */}
             <Handle
                 type="source"
                 position={Position.Top}
@@ -109,40 +147,6 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 id="source-left"
                 isConnectable={true}
                 className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
-                style={{ left: -6 }}
-            />
-
-            {/* Handles on all 4 sides - Target */}
-            <Handle
-                type="target"
-                position={Position.Top}
-                id="target-top"
-                isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
-                style={{ top: -6 }}
-            />
-            <Handle
-                type="target"
-                position={Position.Right}
-                id="target-right"
-                isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
-                style={{ right: -6 }}
-            />
-            <Handle
-                type="target"
-                position={Position.Bottom}
-                id="target-bottom"
-                isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
-                style={{ bottom: -6 }}
-            />
-            <Handle
-                type="target"
-                position={Position.Left}
-                id="target-left"
-                isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
                 style={{ left: -6 }}
             />
 
@@ -195,9 +199,10 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                             className="w-12 h-12 object-contain drop-shadow-md"
                             onError={(e) => {
                                 e.currentTarget.style.display = 'none';
-                                if (e.currentTarget.parentElement) {
-                                    e.currentTarget.parentElement.className = `text-4xl mb-2 text-center text-slate-400 transition-colors duration-300 ${iconClass}`;
-                                    e.currentTarget.parentElement.innerText = data.icon;
+                                const parent = e.currentTarget.parentElement;
+                                if (parent) {
+                                    parent.className = `text-4xl mb-2 text-center text-slate-400 transition-colors duration-300 ${iconClass}`;
+                                    parent.innerText = data.icon;
                                 }
                             }}
                         />

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useNodesState, useEdgesState, addEdge } from 'reactflow';
+import { useNodesState, useEdgesState, addEdge, MarkerType } from 'reactflow';
 import type { Connection } from 'reactflow';
 import { ComponentsPanel } from './ComponentsPanel';
 import { DiagramCanvas } from './DiagramCanvas';
@@ -133,6 +133,14 @@ export const DesignerView = () => {
                 // Smart Routing
                 const { sourceHandle, targetHandle } = getSmartEdge(sourceNode, targetNode);
 
+                console.log('🔗 Smart Connection:', {
+                    source: sourceNode.id,
+                    target: targetNode.id,
+                    sourceHandle,
+                    targetHandle,
+                    dy: targetNode.position.y - sourceNode.position.y
+                });
+
                 setEdges((eds) => addEdge({
                     ...params,
                     sourceHandle,
@@ -142,6 +150,10 @@ export const DesignerView = () => {
                     style: {
                         stroke: '#06b6d4',
                         strokeWidth: 2.5,
+                    },
+                    markerEnd: {
+                        type: MarkerType.ArrowClosed,
+                        color: '#06b6d4',
                     },
                 }, eds));
             }
@@ -245,7 +257,21 @@ export const DesignerView = () => {
 
                 // Apply smart edge routing
                 const smartEdges = applySmartRouting(response.diagram.nodes, response.diagram.edges);
-                setEdges(smartEdges);
+
+                // Add arrow markers
+                const edgesWithArrows = smartEdges.map((edge: any) => ({
+                    ...edge,
+                    markerEnd: {
+                        type: MarkerType.ArrowClosed,
+                        color: '#06b6d4',
+                    },
+                    style: {
+                        stroke: '#06b6d4',
+                        strokeWidth: 2.5,
+                    }
+                }));
+
+                setEdges(edgesWithArrows);
             }
             if (response.terraform) {
                 setTerraformCode(response.terraform);
