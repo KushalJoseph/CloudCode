@@ -40,11 +40,13 @@ export interface GenerateResponse {
 }
 
 export const api = {
-    generateInfrastructure: async (prompt: string, cloudProvider: string): Promise<GenerateResponse> => {
+    generateInfrastructure: async (prompt: string, cloudProvider: string, currentTerraform?: string, currentDiagram?: any): Promise<GenerateResponse> => {
         try {
             const response = await axios.post<GenerateResponse>(`${API_URL}/infrastructure/generate`, {
                 prompt,
                 cloud_provider: cloudProvider,
+                current_terraform: currentTerraform,
+                current_diagram: currentDiagram,
             });
             return response.data;
         } catch (error) {
