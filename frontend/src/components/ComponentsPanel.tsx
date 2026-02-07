@@ -6,6 +6,9 @@ interface Component {
     icon: string;
     description: string;
     category: string;
+    resourceType?: string;
+    terraformParams?: any;
+    cost?: string;
 }
 
 interface ComponentsPanelProps {
@@ -14,14 +17,124 @@ interface ComponentsPanelProps {
 
 // AWS Terraform Components
 const awsComponents: Component[] = [
-    { id: 'aws_instance', name: 'EC2 Instance', icon: '🖥️', description: 'Virtual server', category: 'Compute' },
-    { id: 'aws_lambda_function', name: 'Lambda Function', icon: '⚡', description: 'Serverless function', category: 'Compute' },
-    { id: 'aws_s3_bucket', name: 'S3 Bucket', icon: '�', description: 'Object storage', category: 'Storage' },
-    { id: 'aws_db_instance', name: 'RDS Database', icon: '�️', description: 'Relational database', category: 'Database' },
-    { id: 'aws_dynamodb_table', name: 'DynamoDB Table', icon: '⚡', description: 'NoSQL database', category: 'Database' },
-    { id: 'aws_vpc', name: 'VPC', icon: '�', description: 'Virtual network', category: 'Networking' },
-    { id: 'aws_lb', name: 'Load Balancer', icon: '⚖️', description: 'Traffic distribution', category: 'Networking' },
-    { id: 'aws_api_gateway_rest_api', name: 'API Gateway', icon: '�', description: 'REST API', category: 'Networking' },
+    {
+        id: 'ec2_instance',
+        name: 'EC2 Instance',
+        icon: '🖥️',
+        description: 'Virtual server',
+        category: 'Compute',
+        resourceType: 'aws_instance',
+        terraformParams: {
+            ami: 'ami-0c02fb55956c7d316',
+            instance_type: 't3.micro',
+            key_name: 'default-key',
+        },
+        cost: '$8.50/month',
+    },
+    {
+        id: 'lambda_function',
+        name: 'Lambda Function',
+        icon: '⚡',
+        description: 'Serverless function',
+        category: 'Compute',
+        resourceType: 'aws_lambda_function',
+        terraformParams: {
+            function_name: 'my-function',
+            runtime: 'nodejs18.x',
+            handler: 'index.handler',
+            memory_size: 512,
+            timeout: 30,
+        },
+        cost: '$0.20/million reqs',
+    },
+    {
+        id: 's3_bucket',
+        name: 'S3 Bucket',
+        icon: '📦',
+        description: 'Object storage',
+        category: 'Storage',
+        resourceType: 'aws_s3_bucket',
+        terraformParams: {
+            bucket: 'my-app-bucket',
+            force_destroy: true,
+        },
+        cost: '$0.023/GB',
+    },
+    {
+        id: 'rds_db',
+        name: 'RDS Database',
+        icon: '🗄️',
+        description: 'Relational database',
+        category: 'Database',
+        resourceType: 'aws_db_instance',
+        terraformParams: {
+            identifier: 'my-db',
+            engine: 'postgres',
+            instance_class: 'db.t3.micro',
+            allocated_storage: 20,
+            username: 'dbadmin',
+        },
+        cost: '$15.00/month',
+    },
+    {
+        id: 'dynamodb_table',
+        name: 'DynamoDB Table',
+        icon: '⚡',
+        description: 'NoSQL database',
+        category: 'Database',
+        resourceType: 'aws_dynamodb_table',
+        terraformParams: {
+            name: 'my-table',
+            billing_mode: 'PAY_PER_REQUEST',
+            hash_key: 'id',
+            attribute: [{ name: 'id', type: 'S' }],
+        },
+        cost: '$0.25/GB',
+    },
+    {
+        id: 'vpc',
+        name: 'VPC',
+        icon: '🌐',
+        description: 'Virtual network',
+        category: 'Networking',
+        resourceType: 'aws_vpc',
+        terraformParams: {
+            cidr_block: '10.0.0.0/16',
+            enable_dns_hostnames: true,
+        },
+        cost: '$0.00/month',
+    },
+    {
+        id: 'load_balancer',
+        name: 'Load Balancer',
+        icon: '⚖️',
+        description: 'Traffic distribution',
+        category: 'Networking',
+        resourceType: 'aws_lb',
+        terraformParams: {
+            name: 'my-alb',
+            load_balancer_type: 'application',
+            ip_address_type: 'ipv4',
+        },
+        cost: '$16.00/month',
+    },
+    {
+        id: 'api_gateway',
+        name: 'API Gateway',
+        icon: '🚪',
+        description: 'REST API',
+        category: 'Networking',
+        resourceType: 'aws_apigatewayv2_api',
+        terraformParams: {
+            name: 'my-api',
+            protocol_type: 'HTTP',
+            cors_configuration: {
+                allow_origins: ['*'],
+                allow_methods: ['GET', 'POST', 'PUT', 'DELETE'],
+            },
+        },
+        cost: '$1.00/million reqs',
+    },
 ];
 
 // GCP Terraform Components

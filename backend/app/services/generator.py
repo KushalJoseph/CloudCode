@@ -67,6 +67,14 @@ def parse_llm_response(response: str) -> dict:
     )
     terraform_code = terraform_match.group(1).strip() if terraform_match else ""
     logger.info(f"Found Terraform Code: {bool(terraform_match)}")
+
+    # Print Terraform to console for debugging
+    if terraform_code:
+        print("\n" + "="*50)
+        print(" GENERATED TERRAFORM CODE ")
+        print("="*50 + "\n")
+        print(terraform_code)
+        print("\n" + "="*50 + "\n")
     
     # Extract diagram JSON
     diagram_match = re.search(
@@ -80,6 +88,14 @@ def parse_llm_response(response: str) -> dict:
     diagram = {"nodes": [], "edges": []}
     if diagram_match:
         diagram_str = diagram_match.group(1).strip()
+        
+        # Print Diagram JSON to console for debugging
+        print("\n" + "="*50)
+        print(" GENERATED DIAGRAM JSON ")
+        print("="*50 + "\n")
+        print(diagram_str)
+        print("\n" + "="*50 + "\n")
+
         try:
             diagram = json.loads(diagram_str)
             logger.info(f"Successfully parsed diagram JSON with {len(diagram.get('nodes', []))} nodes")

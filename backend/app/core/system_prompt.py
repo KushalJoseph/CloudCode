@@ -166,11 +166,11 @@ NODE SCHEMAS (Reference "Cookbook"):
    - IAM Role (aws_iam_role): {{ "name": "str", "assume_role_policy": "jsonencode(...)" }}
    - Security Group (aws_security_group): {{ "name": "str", "vpc_id": "str", "ingress": [...], "egress": [...] }}
 
-POSITIONING:
-- Entry points (gateway/LB) at top: y=100
-- Compute layer middle: y=250
-- Data/Storage layer bottom: y=400
-- Space horizontally: 200px apart
+POSITIONING RULES (CRITICAL):
+- Vertical Spacing (Layers): Place layers at y=0, y=300, y=600, etc. (at least 300px gap)
+- Horizontal Spacing (Siblings): Place sibling nodes at x=0, x=400, x=800, etc. (at least 400px gap)
+- Center Alignment: Center the diagram around x=500.
+- Avoid Clutter: Do not place nodes too close. Spread them out generously.
 
 EDGES:
 - Connect based on Terraform resource references
@@ -183,7 +183,7 @@ Example:
     {{
       "id": "api_gateway",
       "type": "custom",
-      "position": {{ "x": 250, "y": 100 }},
+      "position": {{ "x": 400, "y": 0 }},
       "data": {{
         "label": "API Gateway",
         "service": "AWS API Gateway",
@@ -204,7 +204,7 @@ Example:
     {{
       "id": "api_handler",
       "type": "custom",
-      "position": {{ "x": 250, "y": 250 }},
+      "position": {{ "x": 400, "y": 300 }},
       "data": {{
         "label": "API Handler",
         "service": "AWS Lambda",
@@ -231,7 +231,7 @@ Example:
     {{
       "id": "data",
       "type": "custom",
-      "position": {{ "x": 250, "y": 400 }},
+      "position": {{ "x": 400, "y": 600 }},
       "data": {{
         "label": "Data Table",
         "service": "DynamoDB",

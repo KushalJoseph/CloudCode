@@ -34,7 +34,7 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
         if (propEdges) setEdges(propEdges);
     }, [propNodes, propEdges, setNodes, setEdges]);
 
-    const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string } | null>(null);
+    const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string; resourceType?: string; terraformParams?: any; cost?: string } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
 
@@ -86,7 +86,10 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
                     icon: component.icon,
                     color: getColorForCategory(component.category),
                     description: component.description,
-                    onEdit: () => handleNodeEdit(nodeId, component.name, component.id, component.icon, getColorForCategory(component.category), component.description),
+                    resourceType: component.resourceType,
+                    terraformParams: component.terraformParams,
+                    cost: component.cost,
+                    onEdit: () => handleNodeEdit(nodeId, component.name, component.id, component.icon, getColorForCategory(component.category), component.description, component.resourceType, component.terraformParams, component.cost),
                 },
             };
 
@@ -100,7 +103,7 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
         event.dataTransfer.dropEffect = 'copy';
     };
 
-    const handleNodeEdit = useCallback((id: string, label: string, type: string, icon: string, color: string, description: string) => {
+    const handleNodeEdit = useCallback((id: string, label: string, type: string, icon: string, color: string, description: string, resourceType?: string, terraformParams?: any, cost?: string) => {
         setSelectedNode({
             id,
             label,
@@ -108,6 +111,9 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
             icon,
             color,
             description,
+            resourceType,
+            terraformParams,
+            cost,
         });
         setIsModalOpen(true);
     }, []);
@@ -125,7 +131,10 @@ export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges
                         node.data.type,
                         node.data.icon,
                         node.data.color,
-                        node.data.description
+                        node.data.description,
+                        node.data.resourceType,
+                        node.data.terraformParams,
+                        node.data.cost
                     ),
                 },
             }))

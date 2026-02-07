@@ -10,6 +10,9 @@ interface NodePropertiesModalProps {
         icon: string;
         color: string;
         description: string;
+        resourceType?: string;
+        terraformParams?: any;
+        cost?: string;
     } | null;
 }
 
@@ -66,7 +69,7 @@ export const NodePropertiesModal = ({ isOpen, onClose, nodeData }: NodePropertie
                                     <div>
                                         <label className="text-xs text-white/40 block mb-1">Resource Type</label>
                                         <div className="px-3 py-2 bg-slate-900 border border-white/10 rounded-md text-white text-sm">
-                                            {nodeData.type}
+                                            {nodeData.resourceType}
                                         </div>
                                     </div>
                                     <div>
@@ -81,8 +84,45 @@ export const NodePropertiesModal = ({ isOpen, onClose, nodeData }: NodePropertie
                                             {nodeData.description}
                                         </div>
                                     </div>
+                                    {nodeData.cost && (
+                                        <div>
+                                            <label className="text-xs text-white/40 block mb-1">Estimated Cost</label>
+                                            <div className="px-3 py-2 bg-slate-900 border border-white/10 rounded-md text-green-400 text-sm font-mono">
+                                                {nodeData.cost}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
+
+                            {/* Terraform Configuration */}
+                            {nodeData.terraformParams && (
+                                <div>
+                                    <h3 className="text-sm font-semibold text-white/60 uppercase mb-3">Terraform Configuration</h3>
+                                    <div className="bg-slate-900 border border-white/10 rounded-md overflow-hidden">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm text-left">
+                                                <thead className="text-xs text-white/40 uppercase bg-slate-800/50">
+                                                    <tr>
+                                                        <th className="px-4 py-2 font-medium">Parameter</th>
+                                                        <th className="px-4 py-2 font-medium">Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-white/5">
+                                                    {Object.entries(nodeData.terraformParams).map(([key, value]) => (
+                                                        <tr key={key} className="hover:bg-white/5 transition-colors">
+                                                            <td className="px-4 py-2 text-white/60 font-mono text-xs whitespace-nowrap">{key}</td>
+                                                            <td className="px-4 py-2 text-blue-300 font-mono text-xs break-all">
+                                                                {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Configuration */}
                             <div>
