@@ -210,7 +210,56 @@ export const DiagramCanvas = ({
 
 // Zoom Controls Component - Must be inside ReactFlow
 const ZoomControls = ({ onClear }: { onClear: () => void }) => {
-    const { zoomIn, zoomOut } = useReactFlow();
+    const { zoomIn, zoomOut, getNodes } = useReactFlow();
+
+    const handleDownload = async () => {
+        try {
+            const { toPng } = await import('html-to-image');
+            const { getRectOfNodes, getTransformForBounds } = await import('reactflow');
+
+            const nodes = getNodes();
+            if (nodes.length === 0) return;
+
+            // Calculate the bounds of all nodes
+            const nodesBounds = getRectOfNodes(nodes);
+            
+            // Calculate a transform that centers the nodes in the viewport
+            // and adds some padding
+            const transform = getTransformForBounds(
+                nodesBounds,
+                nodesBounds.width,
+                nodesBounds.height,
+                0.5, // minZoom (optional)
+                2,   // maxZoom (optional)
+                0.1  // padding
+            );
+
+            // Select the viewport element (ReactFlow specific class)
+            // We use querySelector inside the react-flow container
+            const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
+            
+            if (!viewport) return;
+
+            const dataUrl = await toPng(viewport, {
+                backgroundColor: '#020617', // slate-950
+                width: nodesBounds.width + 100, // Add some padding to image
+                height: nodesBounds.height + 100,
+                style: {
+                    width: `${nodesBounds.width}px`,
+                    height: `${nodesBounds.height}px`,
+                    transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+                },
+            });
+
+            const link = document.createElement('a');
+            link.download = 'infrastructure-diagram.png';
+            link.href = dataUrl;
+            link.click();
+        } catch (error) {
+            console.error('Failed to download diagram:', error);
+            alert('Failed to download diagram. See console for details.');
+        }
+    };
 
     return (
         <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-10">
@@ -227,6 +276,13 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
                 title="Zoom Out"
             >
                 −
+            </button>
+            <button
+                onClick={handleDownload}
+                className="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-white/20 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
+                title="Download Diagram (PNG)"
+            >
+                📸
             </button>
             <button
                 onClick={onClear}
