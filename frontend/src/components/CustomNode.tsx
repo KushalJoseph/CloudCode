@@ -39,8 +39,8 @@ const iconColorMap: Record<string, string> = {
 const getImagePath = (type: string) => {
     if (!type) return null;
     if (type.startsWith('aws_')) return `/aws-icons/${type}.png`;
-    if (type.startsWith('google_')) return `/gcp-icons/${type}.png`;
-    if (type.startsWith('azurerm_')) return `/azure-icons/${type}.png`;
+    if (type.startsWith('google_') || type.startsWith('gcp_')) return `/gcp-icons/${type}.png`;
+    if (type.startsWith('azurerm_') || type.startsWith('azure_')) return `/azure-icons/${type}.png`;
     return null;
 };
 
