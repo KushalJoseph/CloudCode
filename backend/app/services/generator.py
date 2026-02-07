@@ -1,0 +1,85 @@
+from app.services.dedalus_client import dedalus_client
+from app.core.system_prompt import get_infrastructure_system_prompt
+import re
+import json
+
+async def generate_infrastructure(user_prompt: str, cloud_provider: str) -> dict:
+    """
+    Generate complete infrastructure from user prompt with ONE LLM call
+    
+    Args:
+        user_prompt: Raw user input
+        cloud_provider: "aws" | "gcp" | "azure"
+    
+    Returns:
+        {
+            "refined_prompt": str,
+            "terraform": str,
+            "diagram": dict
+        }
+    """
+    
+    # Get system prompt
+    system_prompt = get_infrastructure_system_prompt(cloud_provider)
+    
+    # Make single LLM call
+    response = await dedalus_client.generate(
+        system_prompt=system_prompt,
+        user_message=user_prompt,
+        temperature=0.3
+    )
+    
+    # Parse response into 3 parts
+    result = parse_llm_response(response)
+    
+    return result
+
+
+def parse_llm_response(response: str) -> dict:
+    """
+    Extract the 3 sections from LLM response
+    
+    Expected format:
+    <refined>...</refined>
+    <terraform>...</terraform>
+    <diagram>...</diagram>
+    """
+    
+    # Extract refined prompt
+    refined_match = re.search(
+        r'<refined>(.*?)</refined>', 
+        response, 
+        re.DOTALL
+    )
+    refined_prompt = refined_match.group(1).strip() if refined_match else ""
+    
+    # Extract Terraform
+    terraform_match = re.search(
+        r'<terraform>(.*?)</terraform>', 
+        response, 
+        re.DOTALL
+    )
+    terraform_code = terraform_match.group(1).strip() if terraform_match else ""
+    
+    # Extract diagram JSON
+    diagram_match = re.search(
+        r'<diagram>(.*?)</diagram>', 
+        response, 
+        re.DOTALL
+    )
+    
+    diagram = {"nodes": [], "edges": []}
+    if diagram_match:
+        diagram_str = diagram_match.group(1).strip()
+        try:
+            diagram = json.loads(diagram_str)
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse diagram JSON: {e}")
+            # In a real app, you might want to retry or sanitize the JSON
+            # For now, return empty diagram on parse failure
+    
+    return {
+        "refined_prompt": refined_prompt,
+        "terraform": terraform_code,
+        "diagram": diagram
+    }
