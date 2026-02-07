@@ -174,7 +174,7 @@ export const AnalyticsDashboard = ({ nodes }: AnalyticsDashboardProps) => {
                                     <Tooltip 
                                         cursor={{fill: '#334155', opacity: 0.2}}
                                         contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px', color: '#fff' }}
-                                        formatter={(value: number) => [`$${value}`, 'Est. Cost']}
+                                        formatter={(value: any) => [`$${value}`, 'Est. Cost']}
                                     />
                                     <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={30}>
                                         {
