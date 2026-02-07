@@ -1,15 +1,13 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
-interface CustomNodeProps {
-    id: string;
-    data: {
-        label: string;
-        type: string;
-        icon: string;
-        color: string;
-        description: string;
-    };
+interface NodeData {
+    label: string;
+    type: string;
+    icon: string;
+    color: string;
+    description: string;
+    onEdit?: () => void;
 }
 
 const colorMap: Record<string, string> = {
@@ -28,7 +26,7 @@ const shadowMap: Record<string, string> = {
     orange: 'shadow-orange-500/50'
 };
 
-export const CustomNode = memo(({ id, data }: CustomNodeProps) => {
+export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) => {
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const { deleteElements } = useReactFlow();
@@ -59,43 +57,50 @@ export const CustomNode = memo(({ id, data }: CustomNodeProps) => {
 
     return (
         <div className="relative" ref={menuRef}>
-            {/* Handles on all 4 sides - much larger with hover effects */}
+            {/* Handles on all 4 sides - larger with unique IDs */}
             <Handle
-                type="target"
+                type="source"
                 position={Position.Top}
+                id="top"
+                isConnectable={true}
                 className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
                 style={{ top: -20 }}
             />
             <Handle
                 type="source"
                 position={Position.Right}
+                id="right"
+                isConnectable={true}
                 className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
                 style={{ right: -20 }}
             />
             <Handle
                 type="source"
                 position={Position.Bottom}
+                id="bottom"
+                isConnectable={true}
                 className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
                 style={{ bottom: -20 }}
             />
             <Handle
-                type="target"
+                type="source"
                 position={Position.Left}
+                id="left"
+                isConnectable={true}
                 className="w-10 h-10 !bg-cyan-400 !border-3 !border-white hover:!bg-cyan-300 hover:!scale-125 !transition-all !shadow-lg"
                 style={{ left: -20 }}
             />
 
             {/* Node card */}
             <div className={`
-        px-6 py-4 rounded-lg 
-        bg-gradient-to-br ${gradientClass}
-        shadow-lg ${shadowClass}
+px-6 py-4 rounded-lg 
+bg-gradient-to-br ${gradientClass}
+shadow-lg ${shadowClass}
         border border-white/20
-        backdrop-blur-sm
-        min-w-[180px]
-        transition-transform hover:scale-105
-        relative
-      `}>
+min-w-[180px]
+transition-transform hover:scale-105
+relative
+    `}>
                 {/* Three-dot menu button */}
                 <button
                     onClick={(e) => {
@@ -114,9 +119,22 @@ export const CustomNode = memo(({ id, data }: CustomNodeProps) => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
+                                setShowMenu(false);
+                                if (data.onEdit) {
+                                    data.onEdit();
+                                }
+                            }}
+                            className="w-full px-4 py-2 text-left text-white hover:bg-blue-600 rounded-t-md flex items-center gap-2 text-sm"
+                        >
+                            <span>✏️</span>
+                            <span>Edit</span>
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 handleDelete();
                             }}
-                            className="w-full px-4 py-2 text-left text-white hover:bg-red-600 rounded-md flex items-center gap-2 text-sm"
+                            className="w-full px-4 py-2 text-left text-white hover:bg-red-600 rounded-b-md flex items-center gap-2 text-sm"
                         >
                             <span>🗑️</span>
                             <span>Delete</span>
