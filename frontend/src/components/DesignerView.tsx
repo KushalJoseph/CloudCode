@@ -6,6 +6,7 @@ import { ComponentsPanel } from './ComponentsPanel';
 import { DiagramCanvas } from './DiagramCanvas';
 import { ChatPanel } from './ChatPanel';
 import { ProjectsView } from './ProjectsView';
+import { LearnView } from './LearnView';
 import awsLogo from '../assets/aws_logo.png';
 import gcpLogo from '../assets/google_logo.svg';
 import azureLogo from '../assets/azure_logo.svg';
@@ -34,7 +35,7 @@ export const DesignerView = () => {
     const cloudProvider = state?.cloudProvider || 'AWS';
     const [projectName, setProjectName] = useState(state?.projectName || 'Untitled Project');
     const [isEditingName, setIsEditingName] = useState(false);
-    const [activeTab, setActiveTab] = useState<'designer' | 'projects'>('designer');
+    const [activeTab, setActiveTab] = useState<'designer' | 'projects' | 'learn'>('designer');
     const [viewMode, setViewMode] = useState<'diagram' | 'code' | 'analytics'>('diagram');
 
     // Lifted State
@@ -402,6 +403,15 @@ export const DesignerView = () => {
                         >
                             Projects
                         </button>
+                        <button
+                            onClick={() => setActiveTab('learn')}
+                            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === 'learn'
+                                ? 'bg-white dark:bg-slate-700 text-green-700 dark:text-green-400 shadow-sm'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'
+                                }`}
+                        >
+                            Learn
+                        </button>
                     </nav>
                 </div>
 
@@ -541,9 +551,12 @@ export const DesignerView = () => {
                         </button>
                     )}
                 </div>
-            ) : (
+            ) : activeTab === 'projects' ? (
                 /* Projects View */
                 <ProjectsView />
+            ) : (
+                /* Learn View */
+                <LearnView />
             )}
         </div>
     );

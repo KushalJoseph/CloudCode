@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import infrastructure
+from app.api import infrastructure, learn
 
 app = FastAPI(
     title="Prompt to Infrastructure API",
@@ -22,6 +22,12 @@ app.include_router(
     infrastructure.router,
     prefix="/api/infrastructure",
     tags=["infrastructure"]
+)
+
+app.include_router(
+    learn.router,
+    prefix="/api/learn",
+    tags=["learn"]
 )
 
 @app.get("/health")

@@ -78,5 +78,19 @@ export const api = {
             console.error('Error updating infrastructure:', error);
             throw error;
         }
+    },
+
+    learnChat: async (message: string, history: Array<{ role: string; content: string }>): Promise<{ response: string }> => {
+        try {
+            const response = await axios.post<{ response: string }>(`${API_URL}/learn/chat`, {
+                message,
+                history,
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error in learn chat:', error);
+            throw error;
+        }
     }
 };
+
