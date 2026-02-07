@@ -8,26 +8,58 @@ interface Component {
     category: string;
 }
 
+interface ComponentsPanelProps {
+    cloudProvider?: string;
+}
+
+// AWS Terraform Components
 const awsComponents: Component[] = [
-    { id: 'lambda', name: 'Lambda', icon: '⚡', description: 'Serverless compute', category: 'Compute' },
-    { id: 'ec2', name: 'EC2', icon: '🖥️', description: 'Virtual servers', category: 'Compute' },
-    { id: 'ecs', name: 'ECS', icon: '🐳', description: 'Container service', category: 'Compute' },
-    { id: 'apigateway', name: 'API Gateway', icon: '🚪', description: 'API management', category: 'Networking' },
-    { id: 'alb', name: 'Load Balancer', icon: '⚖️', description: 'Traffic distribution', category: 'Networking' },
-    { id: 'cloudfront', name: 'CloudFront', icon: '🌐', description: 'CDN', category: 'Networking' },
-    { id: 'dynamodb', name: 'DynamoDB', icon: '🗄️', description: 'NoSQL database', category: 'Database' },
-    { id: 'rds', name: 'RDS', icon: '🐘', description: 'Relational database', category: 'Database' },
-    { id: 's3', name: 'S3', icon: '📦', description: 'Object storage', category: 'Storage' },
-    { id: 'elasticache', name: 'ElastiCache', icon: '💾', description: 'In-memory cache', category: 'Database' },
-    { id: 'sqs', name: 'SQS', icon: '📮', description: 'Message queue', category: 'Integration' },
-    { id: 'sns', name: 'SNS', icon: '📣', description: 'Pub/sub messaging', category: 'Integration' },
+    { id: 'aws_instance', name: 'EC2 Instance', icon: '🖥️', description: 'Virtual server', category: 'Compute' },
+    { id: 'aws_lambda_function', name: 'Lambda Function', icon: '⚡', description: 'Serverless function', category: 'Compute' },
+    { id: 'aws_s3_bucket', name: 'S3 Bucket', icon: '�', description: 'Object storage', category: 'Storage' },
+    { id: 'aws_db_instance', name: 'RDS Database', icon: '�️', description: 'Relational database', category: 'Database' },
+    { id: 'aws_dynamodb_table', name: 'DynamoDB Table', icon: '⚡', description: 'NoSQL database', category: 'Database' },
+    { id: 'aws_vpc', name: 'VPC', icon: '�', description: 'Virtual network', category: 'Networking' },
+    { id: 'aws_lb', name: 'Load Balancer', icon: '⚖️', description: 'Traffic distribution', category: 'Networking' },
+    { id: 'aws_api_gateway_rest_api', name: 'API Gateway', icon: '�', description: 'REST API', category: 'Networking' },
 ];
 
-const categories = ['Compute', 'Networking', 'Database', 'Storage', 'Integration'];
+// GCP Terraform Components
+const gcpComponents: Component[] = [
+    { id: 'google_compute_instance', name: 'Compute Instance', icon: '🖥️', description: 'Virtual machine', category: 'Compute' },
+    { id: 'google_cloudfunctions_function', name: 'Cloud Function', icon: '⚡', description: 'Serverless function', category: 'Compute' },
+    { id: 'google_storage_bucket', name: 'Cloud Storage', icon: '�', description: 'Object storage', category: 'Storage' },
+    { id: 'google_sql_database_instance', name: 'Cloud SQL', icon: '�️', description: 'Managed database', category: 'Database' },
+    { id: 'google_firestore_database', name: 'Firestore', icon: '🔥', description: 'NoSQL database', category: 'Database' },
+    { id: 'google_compute_network', name: 'VPC Network', icon: '🌐', description: 'Virtual network', category: 'Networking' },
+    { id: 'google_compute_url_map', name: 'Load Balancer', icon: '⚖️', description: 'HTTP(S) load balancer', category: 'Networking' },
+    { id: 'google_cloud_run_service', name: 'Cloud Run', icon: '�', description: 'Containerized app', category: 'Compute' },
+];
 
-export const ComponentsPanel = () => {
+// Azure Terraform Components
+const azureComponents: Component[] = [
+    { id: 'azurerm_linux_virtual_machine', name: 'Virtual Machine', icon: '🖥️', description: 'Linux VM', category: 'Compute' },
+    { id: 'azurerm_function_app', name: 'Function App', icon: '⚡', description: 'Serverless function', category: 'Compute' },
+    { id: 'azurerm_storage_account', name: 'Storage Account', icon: '�', description: 'Blob storage', category: 'Storage' },
+    { id: 'azurerm_mssql_server', name: 'SQL Server', icon: '�️', description: 'SQL database', category: 'Database' },
+    { id: 'azurerm_cosmosdb_account', name: 'Cosmos DB', icon: '🌟', description: 'NoSQL database', category: 'Database' },
+    { id: 'azurerm_virtual_network', name: 'Virtual Network', icon: '🌐', description: 'VNet', category: 'Networking' },
+    { id: 'azurerm_lb', name: 'Load Balancer', icon: '⚖️', description: 'Traffic distribution', category: 'Networking' },
+    { id: 'azurerm_app_service', name: 'App Service', icon: '�', description: 'Web app hosting', category: 'Compute' },
+];
+
+const allCategories = ['Compute', 'Storage', 'Database', 'Networking'];
+
+export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(categories));
+    const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(allCategories));
+
+    // Select components based on cloud provider
+    const components = cloudProvider === 'GCP'
+        ? gcpComponents
+        : cloudProvider === 'Azure'
+            ? azureComponents
+            : awsComponents;
 
     const toggleCategory = (category: string) => {
         setExpandedCategories(prev => {
@@ -41,9 +73,10 @@ export const ComponentsPanel = () => {
         });
     };
 
-    const filteredComponents = awsComponents.filter(comp =>
+    const filteredComponents = components.filter(comp =>
         comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        comp.description.toLowerCase().includes(searchTerm.toLowerCase())
+        comp.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        comp.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleDragStart = (e: React.DragEvent, component: Component) => {
@@ -67,7 +100,7 @@ export const ComponentsPanel = () => {
 
             {/* Component List */}
             <div className="flex-1 overflow-y-auto">
-                {categories.map(category => {
+                {allCategories.map((category: string) => {
                     const categoryComponents = filteredComponents.filter(c => c.category === category);
                     if (categoryComponents.length === 0) return null;
 

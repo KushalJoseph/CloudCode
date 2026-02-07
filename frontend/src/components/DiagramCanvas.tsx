@@ -1,18 +1,18 @@
 import { useCallback, useState } from 'react';
 import ReactFlow, {
     Background,
-    Controls,
-    MiniMap,
     useNodesState,
     useEdgesState,
     ConnectionMode,
     BackgroundVariant,
     addEdge,
+    useReactFlow,
 } from 'reactflow';
 import type { Node, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import { CustomNode } from './CustomNode';
+import { NodePropertiesModal } from './NodePropertiesModal';
 import { initialNodes, initialEdges } from '../data/diagramNodes';
 
 const nodeTypes = {
@@ -22,12 +22,30 @@ const nodeTypes = {
 export const DiagramCanvas = () => {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const [showGrid, setShowGrid] = useState(true);
+    const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string } | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const onConnect = useCallback(
-        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+        (params: Connection) => setEdges((eds) => addEdge({
+            ...params,
+            type: 'smoothstep',
+            animated: true,
+            style: {
+                stroke: '#06b6d4',
+                strokeWidth: 2.5,
+            },
+        }, eds)),
         [setEdges],
     );
+
+    const defaultEdgeOptions = {
+        type: 'smoothstep' as const,
+        animated: true,
+        style: {
+            stroke: '#06b6d4',
+            strokeWidth: 2.5,
+        },
+    };
 
     const handleDrop = useCallback(
         (event: React.DragEvent) => {
@@ -66,6 +84,23 @@ export const DiagramCanvas = () => {
         event.dataTransfer.dropEffect = 'copy';
     };
 
+    const handleNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
+        setSelectedNode({
+            id: node.id,
+            label: node.data.label,
+            type: node.data.type,
+            icon: node.data.icon,
+            color: node.data.color,
+            description: node.data.description,
+        });
+        setIsModalOpen(true);
+    }, []);
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedNode(null);
+    };
+
     const handleClear = () => {
         setNodes([]);
         setEdges([]);
@@ -85,65 +120,63 @@ export const DiagramCanvas = () => {
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
+                    onNodeClick={handleNodeClick}
                     nodeTypes={nodeTypes}
+                    defaultEdgeOptions={defaultEdgeOptions}
                     connectionMode={ConnectionMode.Loose}
                     fitView
                     className="bg-slate-950"
                 >
-                    {showGrid && (
-                        <Background
-                            variant={BackgroundVariant.Dots}
-                            color="#334155"
-                            gap={20}
-                            size={2}
-                        />
-                    )}
-                    <Controls
-                        className="!bg-slate-800 !border-white/10 !shadow-lg"
-                        showInteractive={false}
+                    <Background
+                        variant={BackgroundVariant.Dots}
+                        color="#334155"
+                        gap={20}
+                        size={2}
                     />
-                    <MiniMap
-                        className="!bg-slate-800 !border-white/10"
-                        maskColor="rgba(15, 23, 42, 0.8)"
-                        nodeColor="#3b82f6"
-                    />
+                    <ZoomControls onClear={handleClear} />
                 </ReactFlow>
             </div>
 
-            {/* Bottom Toolbar */}
-            <div className="h-14 border-t border-white/10 bg-slate-900 flex items-center justify-center gap-2 px-4">
-                <button className="p-2 rounded-md bg-slate-800 hover:bg-slate-700 text-white/60 hover:text-white" title="Zoom In">
-                    🔍+
-                </button>
-                <button className="p-2 rounded-md bg-slate-800 hover:bg-slate-700 text-white/60 hover:text-white" title="Zoom Out">
-                    🔍-
-                </button>
-                <button className="p-2 rounded-md bg-slate-800 hover:bg-slate-700 text-white/60 hover:text-white" title="Fit View">
-                    ⛶
-                </button>
-                <div className="w-px h-6 bg-white/10 mx-2" />
-                <button
-                    onClick={() => setShowGrid(!showGrid)}
-                    className={`p-2 rounded-md ${showGrid ? 'bg-green-600 text-white' : 'bg-slate-800 text-white/60'} hover:opacity-80`}
-                    title="Toggle Grid"
-                >
-                    ⊞
-                </button>
-                <button
-                    onClick={handleClear}
-                    className="p-2 rounded-md bg-slate-800 hover:bg-red-600 text-white/60 hover:text-white"
-                    title="Clear Canvas"
-                >
-                    🗑️
-                </button>
-                <button className="p-2 rounded-md bg-slate-800 hover:bg-slate-700 text-white/60 hover:text-white" title="Download">
-                    ⬇️
-                </button>
-                <div className="w-px h-6 bg-white/10 mx-2" />
-                <button className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white font-medium" title="Run">
-                    ▶ Run
-                </button>
-            </div>
+            {/* Node Properties Modal */}
+            <NodePropertiesModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                nodeData={selectedNode}
+            />
+
+
+        </div>
+    );
+};
+
+// Zoom Controls Component - Must be inside ReactFlow
+const ZoomControls = ({ onClear }: { onClear: () => void }) => {
+    const { zoomIn, zoomOut } = useReactFlow();
+
+    return (
+        <div className="absolute bottom-4 right-4 flex flex-col gap-2 z-10">
+            <button
+                onClick={() => zoomIn()}
+                className="w-10 h-10 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105"
+                title="Zoom In"
+            >
+                <span className="text-lg">+</span>
+            </button>
+            <button
+                onClick={() => zoomOut()}
+                className="w-10 h-10 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105"
+                title="Zoom Out"
+            >
+                <span className="text-lg">−</span>
+            </button>
+            <div className="w-10 h-px bg-white/20 my-1" />
+            <button
+                onClick={onClear}
+                className="w-10 h-10 rounded-lg bg-slate-800/90 hover:bg-red-600 border border-white/10 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105"
+                title="Clear Canvas"
+            >
+                <span className="text-lg">🗑️</span>
+            </button>
         </div>
     );
 };
