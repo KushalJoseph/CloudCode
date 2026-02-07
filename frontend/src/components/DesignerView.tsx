@@ -9,6 +9,10 @@ import { AWSLogo, GCPLogo, AzureLogo } from './CloudLogos';
 interface LocationState {
     initialMessage?: string;
     cloudProvider?: string;
+    nodes?: any[];
+    edges?: any[];
+    terraformCode?: string;
+    refinedPrompt?: string;
 }
 
 export const DesignerView = () => {
@@ -77,11 +81,11 @@ export const DesignerView = () => {
 
                     {/* Center - Diagram Canvas */}
                     <div className="flex-1 relative">
-                        <DiagramCanvas />
+                        <DiagramCanvas initialNodes={state?.nodes} initialEdges={state?.edges} />
                     </div>
 
                     {/* Right Panel - Chat */}
-                    <ChatPanel initialMessage={state?.initialMessage} />
+                    <ChatPanel initialMessage={state?.initialMessage} refinedPrompt={state?.refinedPrompt} />
                 </div>
             ) : (
                 /* Projects View */

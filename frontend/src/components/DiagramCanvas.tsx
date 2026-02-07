@@ -19,9 +19,21 @@ const nodeTypes = {
     custom: CustomNode
 };
 
-export const DiagramCanvas = () => {
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+interface DiagramCanvasProps {
+    initialNodes?: Node[];
+    initialEdges?: any[];
+}
+
+export const DiagramCanvas = ({ initialNodes: propNodes, initialEdges: propEdges }: DiagramCanvasProps) => {
+    const [nodes, setNodes, onNodesChange] = useNodesState(propNodes || initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(propEdges || initialEdges);
+
+    // Update nodes/edges if props change (e.g. new generation)
+    useEffect(() => {
+        if (propNodes) setNodes(propNodes);
+        if (propEdges) setEdges(propEdges);
+    }, [propNodes, propEdges, setNodes, setEdges]);
+
     const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
