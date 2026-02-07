@@ -27,6 +27,10 @@ const providers: Array<{ value: CloudProvider; label: string; icon: string }> = 
     { value: 'Azure', label: 'Microsoft Azure', icon: azureLogo },
 ];
 
+// ... imports and interfaces remain the same
+
+// ... mockProjects constant remains the same
+
 export const ProjectsView = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState<Project[]>([]);
@@ -159,15 +163,15 @@ export const ProjectsView = () => {
     };
 
     return (
-        <div className="h-full flex flex-col bg-slate-950">
+        <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
             {/* Header */}
-            <div className="p-8 border-b border-white/10">
-                <h1 className="text-3xl font-bold text-white mb-2">Your Projects</h1>
-                <p className="text-white/60 text-sm">Create, manage, and design your cloud architectures</p>
+            <div className="p-8 border-b border-slate-200 dark:border-white/10">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Your Projects</h1>
+                <p className="text-slate-500 dark:text-white/60 text-sm">Create, manage, and design your cloud architectures</p>
             </div>
 
             {/* Controls */}
-            <div className="px-8 py-4 border-b border-white/10 flex items-center justify-between">
+            <div className="px-8 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
                 <div className="flex items-center gap-4">
                     {/* Search */}
                     <div className="relative">
@@ -176,18 +180,18 @@ export const ProjectsView = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search projects..."
-                            className="w-64 px-4 py-2 pl-10 bg-slate-900 border border-white/10 rounded-lg text-white text-sm placeholder-white/40 focus:outline-none focus:border-green-500/50 transition-colors"
+                            className="w-64 px-4 py-2 pl-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-white/40 focus:outline-none focus:border-green-500/50 transition-colors"
                         />
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40">🔍</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40">🔍</span>
                     </div>
 
                     {/* View Toggle */}
-                    <div className="flex items-center bg-slate-900 border border-white/10 rounded-lg p-1">
+                    <div className="flex items-center bg-slate-200 dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-lg p-1">
                         <button
                             onClick={() => setViewMode('tile')}
                             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'tile'
                                 ? 'bg-green-600 text-white'
-                                : 'text-white/60 hover:text-white'
+                                : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                         >
                             <span className="flex items-center gap-1.5">
@@ -201,7 +205,7 @@ export const ProjectsView = () => {
                             onClick={() => setViewMode('list')}
                             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'list'
                                 ? 'bg-green-600 text-white'
-                                : 'text-white/60 hover:text-white'
+                                : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                         >
                             <span className="flex items-center gap-1.5">
@@ -233,13 +237,13 @@ export const ProjectsView = () => {
                             <div
                                 key={project.id}
                                 onClick={() => handleOpenProject(project)}
-                                className="group relative bg-gradient-to-br from-slate-900 to-slate-900/50 border border-white/10 rounded-xl p-6 hover:border-green-500/50 hover:shadow-lg hover:shadow-green-900/10 transition-all cursor-pointer"
+                                className="group relative bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl p-6 hover:border-green-500/50 hover:shadow-lg hover:shadow-green-900/10 transition-all cursor-pointer"
                             >
                                 {/* Three Dot Menu */}
                                 <div className="absolute top-4 right-4">
                                     <button
                                         onClick={(e) => toggleMenu(e, project.id)}
-                                        className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100"
+                                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100"
                                     >
                                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                             <circle cx="12" cy="6" r="1.5" />
@@ -250,13 +254,13 @@ export const ProjectsView = () => {
 
                                     {/* Dropdown Menu */}
                                     {activeMenuId === project.id && (
-                                        <div className="absolute right-0 top-10 w-44 bg-slate-800 border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
+                                        <div className="absolute right-0 top-10 w-44 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleDuplicateProject(project);
                                                 }}
-                                                className="w-full px-4 py-2.5 text-left text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                className="w-full px-4 py-2.5 text-left text-sm text-slate-600 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-2"
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -268,7 +272,7 @@ export const ProjectsView = () => {
                                                     e.stopPropagation();
                                                     openDeleteModal(project);
                                                 }}
-                                                className="w-full px-4 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
+                                                className="w-full px-4 py-2.5 text-left text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 transition-colors flex items-center gap-2"
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -281,7 +285,7 @@ export const ProjectsView = () => {
 
                                 {/* Provider Icon */}
                                 <div className="flex justify-center mb-5">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-green-600/20 to-emerald-600/10 border border-green-500/20 rounded-xl flex items-center justify-center">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-green-500/10 to-emerald-500/5 dark:from-green-600/20 dark:to-emerald-600/10 border border-green-500/20 rounded-xl flex items-center justify-center">
                                         <img
                                             src={getProviderIcon(project.provider)}
                                             alt={project.provider}
@@ -292,10 +296,10 @@ export const ProjectsView = () => {
 
                                 {/* Project Info */}
                                 <div className="space-y-2 text-center">
-                                    <h3 className="text-white font-semibold text-lg truncate">{project.title}</h3>
-                                    <p className="text-white/50 text-sm line-clamp-2 min-h-[2.5rem]">{project.description}</p>
+                                    <h3 className="text-slate-900 dark:text-white font-semibold text-lg truncate">{project.title}</h3>
+                                    <p className="text-slate-500 dark:text-white/50 text-sm line-clamp-2 min-h-[2.5rem]">{project.description}</p>
                                     <div className="flex items-center justify-center gap-2 pt-2">
-                                        <span className="px-2.5 py-1 bg-green-600/20 border border-green-500/30 rounded-lg text-green-400 text-xs font-medium">
+                                        <span className="px-2.5 py-1 bg-green-50 dark:bg-green-600/20 border border-green-200 dark:border-green-500/30 rounded-lg text-green-600 dark:text-green-400 text-xs font-medium">
                                             {project.provider}
                                         </span>
                                     </div>
@@ -307,7 +311,7 @@ export const ProjectsView = () => {
                     // List View
                     <div className="space-y-2">
                         {/* List Header */}
-                        <div className="grid grid-cols-[1fr_2fr_120px_120px_50px] gap-4 px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wide">
+                        <div className="grid grid-cols-[1fr_2fr_120px_120px_50px] gap-4 px-4 py-2 text-xs text-slate-500 dark:text-white/40 font-medium uppercase tracking-wide">
                             <span>Name</span>
                             <span>Description</span>
                             <span>Provider</span>
@@ -319,25 +323,25 @@ export const ProjectsView = () => {
                             <div
                                 key={project.id}
                                 onClick={() => handleOpenProject(project)}
-                                className="group grid grid-cols-[1fr_2fr_120px_120px_50px] gap-4 items-center px-4 py-3 bg-slate-900/50 border border-white/5 rounded-lg hover:border-green-500/30 hover:bg-slate-900 transition-all cursor-pointer"
+                                className="group grid grid-cols-[1fr_2fr_120px_120px_50px] gap-4 items-center px-4 py-3 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/5 rounded-lg hover:border-green-500/30 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all cursor-pointer shadow-sm dark:shadow-none"
                             >
-                                <span className="text-white font-medium truncate">{project.title}</span>
-                                <span className="text-white/50 text-sm truncate">{project.description}</span>
+                                <span className="text-slate-900 dark:text-white font-medium truncate">{project.title}</span>
+                                <span className="text-slate-500 dark:text-white/50 text-sm truncate">{project.description}</span>
                                 <div className="flex items-center gap-2">
                                     <img
                                         src={getProviderIcon(project.provider)}
                                         alt={project.provider}
                                         className="w-5 h-5 object-contain"
                                     />
-                                    <span className="text-white/60 text-sm">{project.provider}</span>
+                                    <span className="text-slate-600 dark:text-white/60 text-sm">{project.provider}</span>
                                 </div>
-                                <span className="text-white/40 text-sm">{project.updatedAt}</span>
+                                <span className="text-slate-500 dark:text-white/40 text-sm">{project.updatedAt}</span>
 
                                 {/* Three Dot Menu */}
                                 <div className="relative flex justify-end">
                                     <button
                                         onClick={(e) => toggleMenu(e, project.id)}
-                                        className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100"
+                                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100"
                                     >
                                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                             <circle cx="12" cy="6" r="1.5" />
@@ -347,13 +351,13 @@ export const ProjectsView = () => {
                                     </button>
 
                                     {activeMenuId === project.id && (
-                                        <div className="absolute right-0 top-10 w-44 bg-slate-800 border border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
+                                        <div className="absolute right-0 top-10 w-44 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-lg shadow-xl overflow-hidden z-50">
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleDuplicateProject(project);
                                                 }}
-                                                className="w-full px-4 py-2.5 text-left text-sm text-white/80 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                                className="w-full px-4 py-2.5 text-left text-sm text-slate-600 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-2"
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -365,7 +369,7 @@ export const ProjectsView = () => {
                                                     e.stopPropagation();
                                                     openDeleteModal(project);
                                                 }}
-                                                className="w-full px-4 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center gap-2"
+                                                className="w-full px-4 py-2.5 text-left text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 transition-colors flex items-center gap-2"
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -382,11 +386,11 @@ export const ProjectsView = () => {
 
                 {/* Empty State */}
                 {filteredProjects.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-64 text-white/40">
-                        <div className="w-20 h-20 mb-4 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center">
+                    <div className="flex flex-col items-center justify-center h-64 text-slate-400 dark:text-white/40">
+                        <div className="w-20 h-20 mb-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center">
                             <span className="text-4xl">📁</span>
                         </div>
-                        <p className="text-lg font-medium text-white/60">No projects found</p>
+                        <p className="text-lg font-medium text-slate-500 dark:text-white/60">No projects found</p>
                         <p className="text-sm mt-1">
                             {searchQuery ? 'Try adjusting your search' : 'Click "+ New Project" to get started'}
                         </p>

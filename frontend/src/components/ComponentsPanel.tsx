@@ -302,6 +302,10 @@ const azureComponents: Component[] = [
 
 const allCategories = ['Compute', 'Storage', 'Database', 'Networking', 'Application', 'Security'];
 
+// ... imports remain the same
+
+// ... component definitions remain the same
+
 export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(allCategories));
@@ -337,16 +341,16 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
     };
 
     return (
-        <div className="h-full bg-slate-900 flex flex-col">
+        <div className="h-full bg-slate-50 dark:bg-slate-900 flex flex-col transition-colors duration-300">
             {/* Header */}
-            <div className="p-4 border-b border-white/10">
-                <h2 className="text-white font-semibold mb-3">Components</h2>
+            <div className="p-4 border-b border-slate-200 dark:border-white/10">
+                <h2 className="text-slate-900 dark:text-white font-semibold mb-3">Components</h2>
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search..."
-                    className="w-full px-3 py-2 bg-slate-800 border border-white/10 rounded-md text-white text-sm placeholder-white/40 focus:outline-none focus:border-green-500/50"
+                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-md text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-white/40 focus:outline-none focus:border-green-500/50 transition-colors"
                 />
             </div>
 
@@ -357,10 +361,10 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
                     if (categoryComponents.length === 0) return null;
 
                     return (
-                        <div key={category} className="border-b border-white/5">
+                        <div key={category} className="border-b border-slate-200 dark:border-white/5">
                             <button
                                 onClick={() => toggleCategory(category)}
-                                className="w-full px-4 py-2 flex items-center justify-between text-white/60 hover:text-white text-sm"
+                                className="w-full px-4 py-2 flex items-center justify-between text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white text-sm transition-colors hover:bg-slate-100 dark:hover:bg-white/5"
                             >
                                 <span>{category}</span>
                                 <span className="text-xs">{expandedCategories.has(category) ? '▼' : '▶'}</span>
@@ -373,13 +377,13 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
                                             key={component.id}
                                             draggable
                                             onDragStart={(e) => handleDragStart(e, component)}
-                                            className="flex items-center gap-3 px-4 py-2 mx-2 rounded-md hover:bg-slate-800 cursor-grab active:cursor-grabbing group"
+                                            className="flex items-center gap-3 px-4 py-2 mx-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800 cursor-grab active:cursor-grabbing group transition-colors"
                                         >
-                                            <span className="text-xs text-white/30 group-hover:text-white/50">⋮⋮</span>
+                                            <span className="text-xs text-slate-400 dark:text-white/30 group-hover:text-slate-600 dark:group-hover:text-white/50">⋮⋮</span>
 
                                             {/* Icon - Image for all providers, Emoji fallback */}
                                             {['AWS', 'GCP', 'Azure'].includes(cloudProvider) ? (
-                                                <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-white/10 p-1 rounded-sm">
+                                                <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-white dark:bg-white/10 p-1 rounded-sm border border-slate-200 dark:border-transparent">
                                                     <img
                                                         src={`/${cloudProvider.toLowerCase() === 'aws' ? 'aws-icons' : cloudProvider.toLowerCase() === 'gcp' ? 'gcp-icons' : 'azure-icons'}/${component.resourceType || component.id}.png`}
                                                         alt={component.name}
@@ -399,8 +403,8 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
                                             )}
 
                                             <div className="flex-1 min-w-0">
-                                                <div className="text-white text-sm font-medium truncate">{component.name}</div>
-                                                <div className="text-white/40 text-xs truncate">{component.description}</div>
+                                                <div className="text-slate-900 dark:text-white text-sm font-medium truncate">{component.name}</div>
+                                                <div className="text-slate-500 dark:text-white/40 text-xs truncate">{component.description}</div>
                                             </div>
                                         </div>
                                     ))}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { ThemeToggle } from './ThemeToggle';
 
 import googleLogo from '../assets/google_logo.svg';
 import azureLogo from '../assets/azure_logo.svg';
@@ -95,7 +96,12 @@ export const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-8 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-8 relative overflow-hidden font-sans transition-colors duration-300">
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Animated background gradients */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -104,8 +110,8 @@ export const LandingPage = () => {
 
       {/* Typewriter Header */}
       <div className={`transition-all duration-1000 ease-in-out z-10 ${showContent ? 'mb-12 scale-75' : 'mb-0 scale-100'}`}>
-        <h1 className="text-5xl md:text-6xl font-bold text-center bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent h-20">
-          {text}<span className="animate-pulse">|</span>
+        <h1 className="text-5xl md:text-6xl font-bold text-center bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-white dark:to-white/70 bg-clip-text text-transparent h-20">
+          {text}<span className="animate-pulse text-slate-900 dark:text-white">|</span>
         </h1>
       </div>
 
@@ -115,14 +121,14 @@ export const LandingPage = () => {
 
           {loadingStep === 0 ? (
             /* Chat Interface */
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-1 shadow-2xl relative">
-              <div className="relative bg-slate-950/50 rounded-[22px]">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-1 shadow-2xl relative transition-colors duration-300">
+              <div className="relative bg-white/50 dark:bg-slate-950/50 rounded-[22px] transition-colors duration-300">
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Describe your cloud architecture..."
-                  className="w-full h-32 p-6 text-xl bg-transparent text-white placeholder-white/20 focus:outline-none resize-none"
+                  className="w-full h-32 p-6 text-xl bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none resize-none transition-colors duration-300"
                 />
 
                 {/* Bottom Bar with Provider Selector and Send */}
@@ -130,7 +136,10 @@ export const LandingPage = () => {
                   <div className="relative">
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${selectedProvider ? 'bg-white/10 text-white' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all border ${selectedProvider 
+                        ? 'bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white border-slate-200 dark:border-transparent' 
+                        : 'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-white/50 hover:bg-slate-100 dark:hover:bg-white/10 border-transparent'
+                      }`}
                     >
                       {selectedProvider ? (
                         <>
@@ -146,7 +155,7 @@ export const LandingPage = () => {
                     </button>
 
                     {isDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-white/10 rounded-xl overflow-hidden shadow-xl z-20">
+                      <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden shadow-xl z-20">
                         {providers.map((provider) => (
                           <button
                             key={provider.value}
@@ -154,12 +163,12 @@ export const LandingPage = () => {
                               setSelectedProvider(provider.value);
                               setIsDropdownOpen(false);
                             }}
-                            className="w-full px-4 py-1.5 text-left flex items-center gap-3 hover:bg-white/5 transition-colors"
+                            className="w-full px-4 py-1.5 text-left flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                           >
                             <span className="text-lg">
                                 <img src={provider.icon} alt={provider.label} className="w-6 h-6 object-contain" />
                             </span>
-                            <span className="text-white text-sm">{provider.label}</span>
+                            <span className="text-slate-700 dark:text-white text-sm">{provider.label}</span>
                           </button>
                         ))}
                       </div>
@@ -170,8 +179,8 @@ export const LandingPage = () => {
                     onClick={handleSend}
                     disabled={!message.trim() || !selectedProvider}
                     className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${message.trim() && selectedProvider
-                      ? 'bg-white text-black hover:scale-105 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]'
-                      : 'bg-white/10 text-white/20 cursor-not-allowed'
+                      ? 'bg-slate-900 dark:bg-white text-white dark:text-black hover:scale-105 shadow-[0_0_20px_-5px_rgba(0,0,0,0.3)] dark:shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]'
+                      : 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/20 cursor-not-allowed'
                       }`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -192,24 +201,24 @@ export const LandingPage = () => {
                   <div
                     key={step.id}
                     className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-500 ${isActive || isCompleted
-                      ? 'bg-slate-900/80 border-white/10 translate-x-0 opacity-100'
+                      ? 'bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-white/10 translate-x-0 opacity-100 shadow-lg'
                       : 'bg-transparent border-transparent -translate-x-4 opacity-30'
                       }`}
                   >
                     <div className="w-8 h-8 flex items-center justify-center">
                       {isCompleted ? (
                         <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-scale-in">
-                          <svg className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <svg className="w-4 h-4 text-white dark:text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
                       ) : isActive ? (
-                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                        <div className="w-6 h-6 border-2 border-slate-400 dark:border-white/20 border-t-slate-900 dark:border-t-white rounded-full animate-spin"></div>
                       ) : (
-                        <div className="w-2 h-2 bg-white/20 rounded-full"></div>
+                        <div className="w-2 h-2 bg-slate-300 dark:bg-white/20 rounded-full"></div>
                       )}
                     </div>
-                    <span className={`text-lg font-medium transition-colors ${isActive || isCompleted ? 'text-white' : 'text-white/40'}`}>
+                    <span className={`text-lg font-medium transition-colors ${isActive || isCompleted ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-white/40'}`}>
                       {step.text}
                     </span>
                   </div>

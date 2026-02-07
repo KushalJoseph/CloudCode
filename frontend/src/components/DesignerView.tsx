@@ -14,6 +14,7 @@ import { isValidConnection, detectDanglingNodes } from '../utils/validation';
 import { calculateDiff } from '../utils/diff';
 import { applySmartRouting, getSmartEdge } from '../utils/smartEdges';
 import { ValidationPanel } from './ValidationPanel';
+import { ThemeToggle } from './ThemeToggle';
 
 interface LocationState {
     initialMessage?: string;
@@ -332,46 +333,53 @@ export const DesignerView = () => {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-slate-950">
+        <div className="h-screen flex flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
             {/* Header */}
-            <header className="h-14 border-b border-white/10 bg-slate-900 flex items-center justify-center px-4 relative">
-                <div className="absolute left-4 flex items-center gap-3">
+            <header className="h-14 border-b border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 flex items-center justify-between px-4 relative transition-colors duration-300">
+                <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
                             <span className="text-white font-bold text-sm">CC</span>
                         </div>
-                        <span className="text-lg font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+                        <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-500 bg-clip-text text-transparent">
                             CloudCode Designer
                         </span>
                     </div>
                     {cloudProvider && activeTab === 'designer' && (
-                        <span className="ml-4 px-3 py-1.5 bg-green-600/20 border border-green-500/30 rounded-md text-green-400 text-sm font-medium flex items-center gap-2">
-                            {cloudProvider === 'AWS' && <><AWSLogo className="w-4 h-4" /> AWS</>}
-                            {cloudProvider === 'GCP' && <><GCPLogo className="w-4 h-4" /> GCP</>}
-                            {cloudProvider === 'Azure' && <><AzureLogo className="w-4 h-4" /> Azure</>}
+                        <span className="ml-4 px-3 py-1.5 bg-green-50 dark:bg-green-600/20 border border-green-200 dark:border-green-500/30 rounded-md text-green-700 dark:text-green-400 text-sm font-medium flex items-center gap-2">
+                            {cloudProvider === 'AWS' && <><AWSLogo className="w-4 h-4" /> <span className="hidden sm:inline">AWS</span></>}
+                            {cloudProvider === 'GCP' && <><GCPLogo className="w-4 h-4" /> <span className="hidden sm:inline">GCP</span></>}
+                            {cloudProvider === 'Azure' && <><AzureLogo className="w-4 h-4" /> <span className="hidden sm:inline">Azure</span></>}
                         </span>
                     )}
                 </div>
-                <nav className="flex items-center gap-2">
-                    <button
-                        onClick={() => setActiveTab('designer')}
-                        className={`px-6 py-2 text-sm font-medium rounded-lg transition-all ${activeTab === 'designer'
-                            ? 'bg-green-600 text-white border-2 border-green-500'
-                            : 'text-white/60 hover:text-white hover:bg-white/5'
-                            }`}
-                    >
-                        Designer
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('projects')}
-                        className={`px-6 py-2 text-sm font-medium rounded-lg transition-all ${activeTab === 'projects'
-                            ? 'bg-green-600 text-white border-2 border-green-500'
-                            : 'text-white/60 hover:text-white hover:bg-white/5'
-                            }`}
-                    >
-                        Projects
-                    </button>
-                </nav>
+
+                <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
+                     <nav className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200 dark:border-white/5">
+                        <button
+                            onClick={() => setActiveTab('designer')}
+                            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === 'designer'
+                                ? 'bg-white dark:bg-slate-700 text-green-700 dark:text-green-400 shadow-sm'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'
+                                }`}
+                        >
+                            Designer
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('projects')}
+                            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${activeTab === 'projects'
+                                ? 'bg-white dark:bg-slate-700 text-green-700 dark:text-green-400 shadow-sm'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5'
+                                }`}
+                        >
+                            Projects
+                        </button>
+                    </nav>
+                </div>
+
+                <div className="flex items-center gap-3">
+                     <ThemeToggle />
+                </div>
             </header>
 
             {/* Conditional Content */}
@@ -379,7 +387,7 @@ export const DesignerView = () => {
                 /* Main Content - 3 Panel Layout */
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left Panel - Components */}
-                    <div style={{ width: leftPanelWidth }} className="flex-shrink-0 flex flex-col relative">
+                    <div style={{ width: leftPanelWidth }} className="flex-shrink-0 flex flex-col relative bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-white/10 transition-colors duration-300">
                         <ComponentsPanel cloudProvider={cloudProvider} />
                         
                         {/* Right Resize Handle */}
@@ -390,50 +398,26 @@ export const DesignerView = () => {
                     </div>
 
                     {/* Center - Diagram/Code Area */}
-                    <div className="flex-1 relative flex flex-col overflow-hidden bg-slate-950 min-w-0">
+                    <div className="flex-1 relative flex flex-col overflow-hidden bg-white dark:bg-slate-950 min-w-0 transition-colors duration-300">
 
                         {/* View Toggle - Absolute positioned */}
-                        <div className="absolute top-4 right-4 z-10 bg-slate-900/90 backdrop-blur-sm border border-white/10 rounded-lg p-1 flex gap-1 shadow-xl">
-                            <button
-                                onClick={() => {
-                                    const smartEdges = applySmartRouting(nodes, edges);
-                                    setEdges(smartEdges);
-                                }}
-                                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-                                title="Optimize Connections"
-                            >
-                                ⚡
-                            </button>
-                            <div className="w-px bg-white/10 mx-1"></div>
-                            <button
-                                onClick={() => {
-                                    if (window.confirm('Reset project to initial state? This will clear your saved changes.')) {
-                                        localStorage.removeItem('terraform-workbench-state');
-                                        window.location.reload();
-                                    }
-                                }}
-                                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-white/5 transition-all"
-                                title="Reset Project"
-                            >
-                                ↺
-                            </button>
-                            <div className="w-px bg-white/10 mx-1"></div>
+                        <div className="absolute top-4 right-4 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-lg p-1 flex gap-1 shadow-lg shadow-slate-200/50 dark:shadow-none">
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${isSaving
                                     ? 'bg-emerald-600/50 cursor-wait text-white'
-                                    : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20'
+                                    : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 dark:shadow-emerald-900/20'
                                     }`}
                             >
-                                {isSaving ? 'Saving...' : '💾 Save Changes'}
+                                {isSaving ? 'Saving...' : 'Save Changes'}
                             </button>
-                            <div className="w-px bg-white/10 mx-1"></div>
+                            <div className="w-px bg-slate-200 dark:bg-white/10 mx-1"></div>
                             <button
                                 onClick={() => setViewMode('diagram')}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'diagram'
-                                    ? 'bg-indigo-600 text-white shadow-lg'
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:shadow-none'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                                     }`}
                             >
                                 Diagram
@@ -441,8 +425,8 @@ export const DesignerView = () => {
                             <button
                                 onClick={() => setViewMode('code')}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'code'
-                                    ? 'bg-indigo-600 text-white shadow-lg'
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:shadow-none'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                                     }`}
                             >
                                 Terraform
@@ -450,8 +434,8 @@ export const DesignerView = () => {
                             <button
                                 onClick={() => setViewMode('analytics')}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'analytics'
-                                    ? 'bg-indigo-600 text-white shadow-lg'
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:shadow-none'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                                     }`}
                             >
                                 Analytics
@@ -490,7 +474,7 @@ export const DesignerView = () => {
 
                     {/* Right Panel - Chat */}
                     {isChatOpen ? (
-                        <div style={{ width: rightPanelWidth }} className="flex-shrink-0 flex flex-col relative h-[calc(100vh-64px)]">
+                        <div style={{ width: rightPanelWidth }} className="flex-shrink-0 flex flex-col relative h-[calc(100vh-56px)] bg-slate-50 dark:bg-slate-900 border-l border-slate-200 dark:border-white/10 transition-colors duration-300">
                             {/* Left Resize Handle */}
                             <div
                                 className="absolute top-0 left-[-4px] w-[8px] h-full cursor-col-resize z-20 hover:bg-green-500/50 transition-colors opacity-0 hover:opacity-100"

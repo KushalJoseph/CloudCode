@@ -10,6 +10,7 @@ import 'reactflow/dist/style.css';
 
 import { CustomNode } from './CustomNode';
 import { NodePropertiesModal } from './NodePropertiesModal';
+import { useTheme } from '../context/ThemeContext';
 
 const nodeTypes = {
     custom: CustomNode
@@ -39,6 +40,7 @@ export const DiagramCanvas = ({
     const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string; resourceType?: string; terraformParams?: any; cost?: string } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
+    const { theme } = useTheme();
 
     // onConnect is now passed as prop
 
@@ -46,7 +48,7 @@ export const DiagramCanvas = ({
         type: 'smoothstep' as const,
         animated: true,
         style: {
-            stroke: '#06b6d4',
+            stroke: theme === 'dark' ? '#06b6d4' : '#0891b2',
             strokeWidth: 2.5,
             cursor: 'pointer',
         },
@@ -150,7 +152,7 @@ export const DiagramCanvas = ({
         ...edge,
         style: {
             ...edge.style,
-            stroke: edge.id === selectedEdge ? '#ef4444' : '#06b6d4',
+            stroke: edge.id === selectedEdge ? '#ef4444' : (theme === 'dark' ? '#06b6d4' : '#0891b2'),
             strokeWidth: edge.id === selectedEdge ? 3.5 : 2.5,
         },
         animated: edge.id === selectedEdge ? false : true,
@@ -186,9 +188,14 @@ export const DiagramCanvas = ({
                     selectNodesOnDrag={false}
                     panOnDrag={true}
                     fitView
-                    className="bg-slate-950"
+                    className="bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
                 >
-                    <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#1e293b" />
+                    <Background 
+                        variant={BackgroundVariant.Dots} 
+                        gap={12} 
+                        size={1} 
+                        color={theme === 'dark' ? '#1e293b' : '#cbd5e1'} 
+                    />
                     <ZoomControls onClear={handleClearCanvas} />
                     {selectedEdge && (
                         <EdgeDeleteButton onDelete={handleDeleteEdge} />
@@ -200,7 +207,38 @@ export const DiagramCanvas = ({
             <NodePropertiesModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                nodeData={selectedNode}
+                node={selectedNode ? {
+                    id: selectedNode.id,
+                    data: {
+                        label: selectedNode.label,
+                        type: selectedNode.type,
+                        icon: selectedNode.icon,
+                        color: selectedNode.color,
+                        description: selectedNode.description,
+                        resourceType: selectedNode.resourceType,
+                        terraformParams: selectedNode.terraformParams,
+                        cost: selectedNode.cost,
+                    }
+                } : null}
+                onSave={(id, data) => {
+                    // Handle save logic - update nodes state
+                    setNodes((nds: Node[]) => nds.map((node) => {
+                        if (node.id === id) {
+                            return {
+                                ...node,
+                                data: {
+                                    ...node.data,
+                                    ...data
+                                }
+                            };
+                        }
+                        return node;
+                    }));
+                }}
+                onDelete={(id) => {
+                    setNodes((nds: Node[]) => nds.filter((n) => n.id !== id));
+                    setEdges((eds: any[]) => eds.filter((e) => e.source !== id && e.target !== id));
+                }}
             />
 
 
@@ -211,6 +249,7 @@ export const DiagramCanvas = ({
 // Zoom Controls Component - Must be inside ReactFlow
 const ZoomControls = ({ onClear }: { onClear: () => void }) => {
     const { zoomIn, zoomOut, getNodes } = useReactFlow();
+    const { theme } = useTheme();
 
     const handleDownload = async () => {
         try {
@@ -241,7 +280,7 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
             if (!viewport) return;
 
             const dataUrl = await toPng(viewport, {
-                backgroundColor: '#020617', // slate-950
+                backgroundColor: theme === 'dark' ? '#020617' : '#f8fafc', // slate-950 or slate-50
                 width: nodesBounds.width + 100, // Add some padding to image
                 height: nodesBounds.height + 100,
                 style: {
@@ -261,25 +300,31 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
         }
     };
 
+    const buttonClass = `w-10 h-10 rounded-lg font-bold flex items-center justify-center transition-all hover:scale-105 border ${
+        theme === 'dark' 
+        ? 'bg-slate-800 hover:bg-slate-700 border-white/20 text-white' 
+        : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700 shadow-sm'
+    }`;
+
     return (
         <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-10">
             <button
                 onClick={() => zoomIn()}
-                className="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-white/20 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
+                className={buttonClass}
                 title="Zoom In"
             >
                 +
             </button>
             <button
                 onClick={() => zoomOut()}
-                className="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-white/20 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
+                className={buttonClass}
                 title="Zoom Out"
             >
                 −
             </button>
             <button
                 onClick={handleDownload}
-                className="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-white/20 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
+                className={buttonClass}
                 title="Download Diagram (PNG)"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
