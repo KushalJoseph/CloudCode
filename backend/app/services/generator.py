@@ -6,13 +6,20 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-async def generate_infrastructure(user_prompt: str, cloud_provider: str) -> dict:
+async def generate_infrastructure(
+    user_prompt: str, 
+    cloud_provider: str,
+    current_terraform: str = None,
+    current_diagram: dict = None
+) -> dict:
     """
     Generate complete infrastructure from user prompt with ONE LLM call
     
     Args:
         user_prompt: Raw user input
         cloud_provider: "aws" | "gcp" | "azure"
+        current_terraform: Existing Terraform code (optional)
+        current_diagram: Existing diagram JSON (optional)
     
     Returns:
         {
@@ -23,7 +30,11 @@ async def generate_infrastructure(user_prompt: str, cloud_provider: str) -> dict
     """
     
     # Get system prompt
-    system_prompt = get_infrastructure_system_prompt(cloud_provider)
+    system_prompt = get_infrastructure_system_prompt(
+        cloud_provider, 
+        current_terraform, 
+        current_diagram
+    )
     
     # Make single LLM call
     response = await dedalus_client.generate(

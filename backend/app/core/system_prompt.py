@@ -1,7 +1,40 @@
-def get_infrastructure_system_prompt(cloud_provider: str) -> str:
-    return f"""You are an expert cloud infrastructure architect for {cloud_provider.upper()}.
+def get_infrastructure_system_prompt(cloud_provider: str, current_terraform: str = None, current_diagram: dict = None) -> str:
+    # Basic role definition
+    prompt = f"""You are an expert cloud infrastructure architect for {cloud_provider.upper()}.
 
-Your job: Generate complete infrastructure from user prompts in a specific structured format.
+Your job: Generate or modify cloud infrastructure based on user prompts.
+
+"""
+
+    # Add context if refinement
+    if current_terraform:
+        prompt += f"""
+CONTEXT: EXISTING INFRASTRUCTURE
+The user is asking to MODIFY this existing infrastructure:
+
+<current_terraform>
+{current_terraform}
+</current_terraform>
+
+<current_diagram_nodes>
+{current_diagram.get('nodes', []) if current_diagram else []}
+</current_diagram_nodes>
+
+INSTRUCTIONS FOR REFINEMENT:
+1. MODIFY the existing Terraform code to meet the new requirement.
+2. PRESERVE existing resources unless explicitly asked to delete them.
+3. PRESERVE existing node positions (x, y) where possible to maintain the user's layout.
+4. Only add new nodes/edges or update existing ones.
+"""
+    else:
+        prompt += """
+CONTEXT: NEW PROJECT
+The user is starting from scratch.
+"""
+
+    prompt += f"""
+OUTPUT FORMAT - You MUST output exactly 3 sections in this order:
+
 
 OUTPUT FORMAT - You MUST output exactly 3 sections in this order:
 
@@ -280,3 +313,5 @@ REMEMBER:
 5. Cloud provider: {cloud_provider.upper()}
 
 Now generate infrastructure based on the user's prompt."""
+
+    return prompt
