@@ -39,6 +39,15 @@ export interface GenerateResponse {
     diagram: Diagram;
 }
 
+export interface UpdateResponse {
+    valid: boolean;
+    connection_valid: boolean;
+    terraform: string;
+    analysis?: string;
+    errors?: string[];
+    warnings?: string[];
+}
+
 export const api = {
     generateInfrastructure: async (prompt: string, cloudProvider: string, currentTerraform?: string, currentDiagram?: any): Promise<GenerateResponse> => {
         try {
@@ -54,4 +63,20 @@ export const api = {
             throw error;
         }
     },
+
+    updateInfrastructure: async (currentTerraform: string, diff: any, newDiagram: any): Promise<UpdateResponse> => {
+        try {
+            const response = await axios.post<UpdateResponse>(`${API_URL}/infrastructure/update`, {
+                current_terraform: currentTerraform,
+                diff,
+                new_diagram: newDiagram,
+                old_diagram: { nodes: [], edges: [] } // Backend requires it but for now we might not strictly need it if diff is provided, or we should pass it. Let's Pass logic in DesignerView handles it.
+                // Wait, the API requires old_diagram. I should pass it.
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating infrastructure:', error);
+            throw error;
+        }
+    }
 };

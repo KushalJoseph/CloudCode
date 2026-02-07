@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface TerraformViewerProps {
     code: string;
@@ -27,18 +25,16 @@ export const TerraformViewer = ({ code }: TerraformViewerProps) => {
                         <p className="text-xs text-slate-400">Generated infrastructure code</p>
                     </div>
                 </div>
-                
             </div>
 
-            <div className="flex-1 overflow-hidden relative group bg-slate-950">
+            <div className="flex-1 overflow-auto relative group bg-slate-950 p-4">
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
-                     <button
+                    <button
                         onClick={handleCopy}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border shadow-lg ${
-                            copied 
-                                ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 border shadow-lg ${copied
+                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
                                 : 'bg-slate-800/80 backdrop-blur-sm text-slate-300 border-white/10 hover:bg-slate-700 hover:border-white/20'
-                        }`}
+                            }`}
                     >
                         {copied ? (
                             <>
@@ -53,22 +49,9 @@ export const TerraformViewer = ({ code }: TerraformViewerProps) => {
                     </button>
                 </div>
 
-               <SyntaxHighlighter
-                    language="hcl"
-                    style={vscDarkPlus}
-                    customStyle={{
-                        margin: 0,
-                        padding: '1.5rem',
-                        height: '100%',
-                        fontSize: '0.875rem',
-                        lineHeight: '1.5',
-                        backgroundColor: 'transparent',
-                    }}
-                    showLineNumbers={true}
-                    wrapLines={true}
-                >
+                <pre className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
                     {code || "// No Terraform code generated yet. Describe your infrastructure to generate code."}
-                </SyntaxHighlighter>
+                </pre>
             </div>
         </div>
     );

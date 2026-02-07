@@ -13,7 +13,7 @@ class NodeData(BaseModel):
     resourceType: str
     icon: str
     color: str
-    terraformParams: Dict[str, Any]  # ALL Terraform params
+    terraformParams: Optional[Dict[str, Any]] = {}  # ALL Terraform params
     description: Optional[str] = None
     cost: Optional[str] = None
 
@@ -38,3 +38,24 @@ class GenerateResponse(BaseModel):
     refined_prompt: str
     terraform: str
     diagram: Diagram
+
+class DiagramDiff(BaseModel):
+    added_nodes: List[Node] = []
+    removed_nodes: List[Node] = []
+    modified_nodes: List[Node] = []
+    added_edges: List[Edge] = []
+    removed_edges: List[Edge] = []
+
+class UpdateRequest(BaseModel):
+    current_terraform: str
+    old_diagram: Diagram
+    new_diagram: Diagram
+    diff: DiagramDiff
+
+class UpdateResponse(BaseModel):
+    valid: bool
+    connection_valid: bool = True
+    terraform: Optional[str] = None
+    analysis: Optional[str] = None
+    errors: Optional[List[str]] = None
+    warnings: Optional[List[str]] = None

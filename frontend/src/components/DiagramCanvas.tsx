@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import ReactFlow, {
     Background,
     ConnectionMode,
@@ -73,14 +73,14 @@ export const DiagramCanvas = ({
                 position,
                 data: {
                     label: component.name,
+                    service: component.name, // Required by backend schema
                     type: component.id,
                     icon: component.icon,
                     color: getColorForCategory(component.category),
                     description: component.description,
-                    resourceType: component.resourceType,
+                    resourceType: component.resourceType || component.id,
                     terraformParams: component.terraformParams,
                     cost: component.cost,
-                    onEdit: () => handleNodeEdit(nodeId, component.name, component.id, component.icon, getColorForCategory(component.category), component.description, component.resourceType, component.terraformParams, component.cost),
                 },
             };
 
@@ -109,28 +109,19 @@ export const DiagramCanvas = ({
         setIsModalOpen(true);
     }, []);
 
-    // Ensure all nodes have the onEdit callback
-    useEffect(() => {
-        setNodes((nds: Node[]) =>
-            nds.map((node) => ({
-                ...node,
-                data: {
-                    ...node.data,
-                    onEdit: () => handleNodeEdit(
-                        node.id,
-                        node.data.label,
-                        node.data.type,
-                        node.data.icon,
-                        node.data.color,
-                        node.data.description,
-                        node.data.resourceType,
-                        node.data.terraformParams,
-                        node.data.cost
-                    ),
-                },
-            }))
+    const handleNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
+        handleNodeEdit(
+            node.id,
+            node.data.label,
+            node.data.type,
+            node.data.icon,
+            node.data.color,
+            node.data.description,
+            node.data.resourceType,
+            node.data.terraformParams,
+            node.data.cost
         );
-    }, [handleNodeEdit, setNodes]);
+    }, [handleNodeEdit]);
 
     const handleEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
         setSelectedEdge(edge.id);
@@ -179,6 +170,7 @@ export const DiagramCanvas = ({
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
+                    onNodeClick={handleNodeClick}
                     onEdgeClick={handleEdgeClick}
                     onPaneClick={() => setSelectedEdge(null)}
                     nodeTypes={nodeTypes}

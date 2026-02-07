@@ -78,48 +78,76 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
 
     return (
         <div className="relative" ref={menuRef}>
-            {/* Handles on all 4 sides - larger with unique IDs */}
+            {/* Handles on all 4 sides - Source */}
             <Handle
                 type="source"
                 position={Position.Top}
-                id="top"
+                id="source-top"
                 isConnectable={true}
-                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
-                style={{ top: -16 }}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                style={{ top: -6 }}
             />
             <Handle
                 type="source"
                 position={Position.Right}
-                id="right"
+                id="source-right"
                 isConnectable={true}
-                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
-                style={{ right: -16 }}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                style={{ right: -6 }}
             />
             <Handle
                 type="source"
                 position={Position.Bottom}
-                id="bottom"
+                id="source-bottom"
                 isConnectable={true}
-                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
-                style={{ bottom: -16 }}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                style={{ bottom: -6 }}
             />
             <Handle
                 type="source"
                 position={Position.Left}
-                id="left"
+                id="source-left"
                 isConnectable={true}
-                className="w-8 h-8 !bg-slate-400 !border-4 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !shadow-lg !rounded-full"
-                style={{ left: -16 }}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                style={{ left: -6 }}
+            />
+
+            {/* Handles on all 4 sides - Target */}
+            <Handle
+                type="target"
+                position={Position.Top}
+                id="target-top"
+                isConnectable={true}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ top: -6 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Right}
+                id="target-right"
+                isConnectable={true}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ right: -6 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Bottom}
+                id="target-bottom"
+                isConnectable={true}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ bottom: -6 }}
+            />
+            <Handle
+                type="target"
+                position={Position.Left}
+                id="target-left"
+                isConnectable={true}
+                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                style={{ left: -6 }}
             />
 
             {/* Node card */}
-            <div 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (data.onEdit) {
-                        data.onEdit();
-                    }
-                }}
+            <div
                 className={`
                 px-6 py-4 rounded-xl
                 bg-slate-900/90 backdrop-blur-md
