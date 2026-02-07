@@ -337,8 +337,8 @@ OUTPUT FORMAT:
 You MUST output exactly 4 sections in this order:
 
 1. ANALYSIS (between <analysis> tags)
-   - A brief message describing the user's change and your assessment.
-   - Example: "User added a new SQS queue. This is a valid pattern."
+   - A concise message describing the user's change and your assessment (Max 1 sentence).
+   - Example: "User added a new SQS queue, which is a valid pattern."
 
 2. STATUS (between <status> tags)
    - Either "VALID" or "INVALID".
