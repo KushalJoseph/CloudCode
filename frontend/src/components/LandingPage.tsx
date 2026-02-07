@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
 
 type CloudProvider = 'AWS' | 'GCP' | 'Azure' | null;
 
@@ -15,15 +16,35 @@ export const LandingPage = () => {
     { value: 'Azure', label: 'Microsoft Azure', icon: '⚡', color: 'from-blue-600 to-cyan-500' },
   ];
 
-  const handleSend = () => {
-    if (!message.trim() || !selectedProvider) return;
+  const [isLoading, setIsLoading] = useState(false);
 
-    navigate('/designer', {
-      state: {
-        initialMessage: message,
-        cloudProvider: selectedProvider,
-      },
-    });
+  const handleSend = async () => {
+    if (!message.trim() || !selectedProvider || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      // Import api dynamically to avoid circular dependencies if any, 
+      // or just standard import at top. For now, let's assume standard import.
+      // But wait, I need to add the import statement first.
+
+      const response = await api.generateInfrastructure(message, selectedProvider.toLowerCase());
+
+      navigate('/designer', {
+        state: {
+          initialMessage: message,
+          cloudProvider: selectedProvider,
+          nodes: response.diagram.nodes,
+          edges: response.diagram.edges,
+          terraformCode: response.terraform,
+          refinedPrompt: response.refined_prompt,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to generate infrastructure:', error);
+      // Optional: Add error handling UI here
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -137,23 +158,27 @@ export const LandingPage = () => {
               </div>
               <button
                 onClick={handleSend}
-                disabled={!message.trim() || !selectedProvider}
+                disabled={!message.trim() || !selectedProvider || isLoading}
                 className="p-3 bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 disabled:opacity-30 flex-shrink-0"
                 title="Send message"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 10l7-7m0 0l7 7m-7-7v18"
-                  />
-                </svg>
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 10l7-7m0 0l7 7m-7-7v18"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
             {selectedProvider && (

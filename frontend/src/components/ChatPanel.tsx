@@ -22,9 +22,10 @@ const suggestedPrompts = [
 
 interface ChatPanelProps {
     initialMessage?: string;
+    refinedPrompt?: string;
 }
 
-export const ChatPanel = ({ initialMessage }: ChatPanelProps) => {
+export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => {
     const [messages, setMessages] = useState<Message[]>(initialMessages);
     const [input, setInput] = useState('');
     const [isOpen, setIsOpen] = useState(true);
@@ -43,9 +44,19 @@ export const ChatPanel = ({ initialMessage }: ChatPanelProps) => {
                 content: `I'll help you with "${initialMessage}". Let me analyze your requirements and suggest the best cloud architecture...`,
             };
 
-            setMessages([...initialMessages, userMessage, assistantMessage]);
+            const newMessages = [...initialMessages, userMessage, assistantMessage];
+
+            if (refinedPrompt) {
+                newMessages.push({
+                    id: (Date.now() + 2).toString(),
+                    role: 'assistant',
+                    content: `Here is the refined prompt based on your request:\n\n${refinedPrompt}`,
+                });
+            }
+
+            setMessages(newMessages);
         }
-    }, [initialMessage]);
+    }, [initialMessage, refinedPrompt]);
 
     const handleSend = () => {
         if (!input.trim()) return;

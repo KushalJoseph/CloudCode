@@ -97,14 +97,15 @@ resource "aws_iam_role" "lambda_role" {{
 ---
 
 SECTION 3: DIAGRAM SPECIFICATION
-Generate React Flow diagram as JSON. **CRITICAL**: Store ALL Terraform parameters in each node's terraformParams.
+Generate React Flow diagram as JSON. **CRITICAL**: Store ALL Terraform parameters in each node's infraParams.
 
 Structure:
 {{
   "nodes": [
     {{
       "id": "unique_id",
-      "type": "generic_type",
+      "type": "custom", // ALWAYS "custom"
+      "position": {{ "x": 100, "y": 200 }},
       "data": {{
         "label": "Display Name",
         "service": "AWS Service Name",
@@ -112,17 +113,11 @@ Structure:
         "icon": "emoji",
         "color": "blue|purple|green|orange|cyan",
         "terraformParams": {{
-          // EVERY parameter from the Terraform resource
-          "function_name": "api-handler",
-          "runtime": "nodejs18.x",
-          "memory_size": 512,
-          "timeout": 30,
-          // ... ALL of them
+          // See specific schemas below for required parameters for each resource type
         }},
         "description": "Brief description",
         "cost": "$X.XX/month"
-      }},
-      "position": {{"x": 100, "y": 200}}
+      }}
     }}
   ],
   "edges": [
@@ -136,20 +131,45 @@ Structure:
   ]
 }}
 
-NODE TYPES (use generic types):
-- "function" (Lambda, Cloud Functions)
-- "database" (RDS, DynamoDB, Cloud SQL)
-- "cache" (ElastiCache, Memorystore)
-- "storage" (S3, Cloud Storage)
-- "queue" (SQS, Pub/Sub)
-- "gateway" (API Gateway)
-- "cdn" (CloudFront)
-- "network" (VPC)
+NODE SCHEMAS (Reference "Cookbook"):
+
+1. 💻 COMPUTE (Color: blue)
+   - Function (aws_lambda_function):
+     {{ "function_name": "str", "runtime": "nodejs18.x|python3.9", "handler": "str", "memory_size": int, "timeout": int, "architectures": ["x86_64"], "environment": {{ "variables": {{...}} }}, "vpc_config": {{...}} }}
+   - Instance (aws_instance):
+     {{ "ami": "str", "instance_type": "t3.micro", "key_name": "str", "subnet_id": "str", "vpc_security_group_ids": ["str"], "tags": {{...}} }}
+   - ECS Service (aws_ecs_service):
+     {{ "name": "str", "cluster": "str", "task_definition": "str", "desired_count": int, "launch_type": "FARGATE", "network_configuration": {{...}} }}
+
+2. 🗄️ DATABASE (Color: purple)
+   - DynamoDB (aws_dynamodb_table):
+     {{ "name": "str", "billing_mode": "PAY_PER_REQUEST", "hash_key": "str", "attribute": [{{ "name": "str", "type": "S|N" }}], "stream_enabled": bool }}
+   - RDS (aws_db_instance):
+     {{ "identifier": "str", "engine": "postgres|mysql", "instance_class": "db.t3.micro", "allocated_storage": int, "username": "str", "password": "${{var.db_password}}" }}
+   - ElastiCache (aws_elasticache_cluster):
+     {{ "cluster_id": "str", "engine": "redis", "node_type": "cache.t3.micro", "num_cache_nodes": int }}
+
+3. 📦 STORAGE (Color: orange)
+   - S3 (aws_s3_bucket): {{ "bucket": "str", "force_destroy": bool }}
+   - EFS (aws_efs_file_system): {{ "creation_token": "str", "encrypted": true }}
+
+4. 🌐 NETWORKING (Color: cyan)
+   - API Gateway (aws_apigatewayv2_api): {{ "name": "str", "protocol_type": "HTTP", "cors_configuration": {{...}} }}
+   - Load Balancer (aws_lb): {{ "name": "str", "load_balancer_type": "application", "security_groups": [...], "subnets": [...] }}
+   - VPC (aws_vpc): {{ "cidr_block": "10.0.0.0/16", "enable_dns_hostnames": true }}
+
+5. 🔌 INTEGRATION (Color: green)
+   - SQS (aws_sqs_queue): {{ "name": "str", "delay_seconds": int }}
+   - SNS (aws_sns_topic): {{ "name": "str" }}
+
+6. 🛡️ SECURITY (Color: red/gray)
+   - IAM Role (aws_iam_role): {{ "name": "str", "assume_role_policy": "jsonencode(...)" }}
+   - Security Group (aws_security_group): {{ "name": "str", "vpc_id": "str", "ingress": [...], "egress": [...] }}
 
 POSITIONING:
-- Entry points (gateway) at top: y=100
+- Entry points (gateway/LB) at top: y=100
 - Compute layer middle: y=250
-- Data layer bottom: y=400
+- Data/Storage layer bottom: y=400
 - Space horizontally: 200px apart
 
 EDGES:
@@ -162,7 +182,8 @@ Example:
   "nodes": [
     {{
       "id": "api_gateway",
-      "type": "gateway",
+      "type": "custom",
+      "position": {{ "x": 250, "y": 100 }},
       "data": {{
         "label": "API Gateway",
         "service": "AWS API Gateway",
@@ -171,16 +192,19 @@ Example:
         "color": "cyan",
         "terraformParams": {{
           "name": "serverless-api",
-          "protocol_type": "HTTP"
+          "protocol_type": "HTTP",
+          "cors_configuration": {{
+             "allow_origins": ["*"]
+          }}
         }},
         "description": "HTTP API endpoint",
         "cost": "$3.50/month"
-      }},
-      "position": {{"x": 250, "y": 100}}
+      }}
     }},
     {{
       "id": "api_handler",
-      "type": "function",
+      "type": "custom",
+      "position": {{ "x": 250, "y": 250 }},
       "data": {{
         "label": "API Handler",
         "service": "AWS Lambda",
@@ -202,12 +226,12 @@ Example:
         }},
         "description": "Processes API requests",
         "cost": "$8.50/month"
-      }},
-      "position": {{"x": 250, "y": 250}}
+      }}
     }},
     {{
       "id": "data",
-      "type": "database",
+      "type": "custom",
+      "position": {{ "x": 250, "y": 400 }},
       "data": {{
         "label": "Data Table",
         "service": "DynamoDB",
@@ -219,13 +243,12 @@ Example:
           "billing_mode": "PAY_PER_REQUEST",
           "hash_key": "id",
           "attribute": [
-            {{"name": "id", "type": "S"}}
+            {{ "name": "id", "type": "S" }}
           ]
         }},
         "description": "NoSQL data storage",
         "cost": "$1.25/month"
-      }},
-      "position": {{"x": 250, "y": 400}}
+      }}
     }}
   ],
   "edges": [
