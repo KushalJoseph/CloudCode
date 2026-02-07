@@ -7,6 +7,8 @@ import { DiagramCanvas } from './DiagramCanvas';
 import { ChatPanel } from './ChatPanel';
 import { ProjectsView } from './ProjectsView';
 import { AWSLogo, GCPLogo, AzureLogo } from './CloudLogos';
+import { TerraformViewer } from './TerraformViewer';
+import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { api } from '../services/api';
 
 interface LocationState {
@@ -23,6 +25,7 @@ export const DesignerView = () => {
     const state = location.state as LocationState;
     const cloudProvider = state?.cloudProvider || 'AWS';
     const [activeTab, setActiveTab] = useState<'designer' | 'projects'>('designer');
+    const [viewMode, setViewMode] = useState<'diagram' | 'code' | 'analytics'>('diagram');
 
     // Lifted State
     const [nodes, setNodes, onNodesChange] = useNodesState(state?.nodes || []);
@@ -136,17 +139,64 @@ export const DesignerView = () => {
                     {/* Left Panel - Components */}
                     <ComponentsPanel cloudProvider={cloudProvider} />
 
-                    {/* Center - Diagram Canvas */}
-                    <div className="flex-1 relative">
-                        <DiagramCanvas
-                            nodes={nodes}
-                            edges={edges}
-                            onNodesChange={onNodesChange}
-                            onEdgesChange={onEdgesChange}
-                            onConnect={onConnect}
-                            setNodes={setNodes}
-                            setEdges={setEdges}
-                        />
+                    {/* Center - Diagram/Code Area */}
+                    <div className="flex-1 relative flex flex-col overflow-hidden bg-slate-950">
+                        
+                         {/* View Toggle - Absolute positioned */}
+                         <div className="absolute top-4 right-4 z-10 bg-slate-900/90 backdrop-blur-sm border border-white/10 rounded-lg p-1 flex gap-1 shadow-xl">
+                            <button
+                                onClick={() => setViewMode('diagram')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    viewMode === 'diagram'
+                                        ? 'bg-indigo-600 text-white shadow-lg'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                Diagram
+                            </button>
+                            <button
+                                onClick={() => setViewMode('code')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    viewMode === 'code'
+                                        ? 'bg-indigo-600 text-white shadow-lg'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                Terraform
+                            </button>
+                            <button
+                                onClick={() => setViewMode('analytics')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    viewMode === 'analytics'
+                                        ? 'bg-indigo-600 text-white shadow-lg'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                Analytics
+                            </button>
+                        </div>
+
+                        {viewMode === 'diagram' ? (
+                            <div className="flex-1 w-full h-full">
+                                <DiagramCanvas
+                                    nodes={nodes}
+                                    edges={edges}
+                                    onNodesChange={onNodesChange}
+                                    onEdgesChange={onEdgesChange}
+                                    onConnect={onConnect}
+                                    setNodes={setNodes}
+                                    setEdges={setEdges}
+                                />
+                            </div>
+                        ) : viewMode === 'code' ? (
+                            <div className="flex-1 w-full h-full overflow-hidden">
+                                <TerraformViewer code={terraformCode} />
+                            </div>
+                        ) : (
+                             <div className="flex-1 w-full h-full overflow-hidden">
+                                <AnalyticsDashboard nodes={nodes} />
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Panel - Chat */}

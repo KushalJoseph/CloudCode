@@ -113,13 +113,20 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
             />
 
             {/* Node card */}
-            <div className={`
+            <div 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (data.onEdit) {
+                        data.onEdit();
+                    }
+                }}
+                className={`
                 px-6 py-4 rounded-xl
                 bg-slate-900/90 backdrop-blur-md
                 border-2 ${borderClass}
                 ${glowClass}
                 min-w-[180px]
-                transition-all duration-300 hover:scale-[1.02]
+                transition-all duration-300 hover:scale-[1.02] hover:cursor-pointer
                 relative
                 group
             `}>
@@ -129,7 +136,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                         e.stopPropagation();
                         setShowMenu(!showMenu);
                     }}
-                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center text-white text-xs transition-all"
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center text-white text-xs transition-all opacity-0 group-hover:opacity-100"
                     title="Options"
                 >
                     ⋮
@@ -141,22 +148,9 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setShowMenu(false);
-                                if (data.onEdit) {
-                                    data.onEdit();
-                                }
-                            }}
-                            className="w-full px-4 py-2 text-left text-white hover:bg-blue-600 rounded-t-md flex items-center gap-2 text-sm"
-                        >
-                            <span>✏️</span>
-                            <span>Edit</span>
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
                                 handleDelete();
                             }}
-                            className="w-full px-4 py-2 text-left text-white hover:bg-red-600 rounded-b-md flex items-center gap-2 text-sm"
+                            className="w-full px-4 py-2 text-left text-white hover:bg-red-600 rounded-md flex items-center gap-2 text-sm"
                         >
                             <span>🗑️</span>
                             <span>Delete</span>
