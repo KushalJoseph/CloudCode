@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 
+import googleLogo from '../assets/google_logo.svg';
+import azureLogo from '../assets/azure_logo.svg';
+import awsLogo from '../assets/aws_logo.png';
+
 type CloudProvider = 'AWS' | 'GCP' | 'Azure' | null;
 
 export const LandingPage = () => {
@@ -31,9 +35,9 @@ export const LandingPage = () => {
   });
 
   const providers: Array<{ value: CloudProvider; label: string; icon: string; color: string }> = [
-    { value: 'AWS', label: 'Amazon Web Services', icon: '☁️', color: 'from-orange-500 to-yellow-500' },
-    { value: 'GCP', label: 'Google Cloud Platform', icon: '🌐', color: 'from-blue-500 to-green-500' },
-    { value: 'Azure', label: 'Microsoft Azure', icon: '⚡', color: 'from-blue-600 to-cyan-500' },
+    { value: 'AWS', label: 'Amazon Web Services', icon: awsLogo, color: 'from-orange-500 to-yellow-500' },
+    { value: 'GCP', label: 'Google Cloud Platform', icon: googleLogo, color: 'from-blue-500 to-green-500' },
+    { value: 'Azure', label: 'Microsoft Azure', icon: azureLogo, color: 'from-blue-600 to-cyan-500' },
   ];
 
   const steps = [
@@ -118,7 +122,7 @@ export const LandingPage = () => {
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Describe your cloud architecture..."
-                  className="w-full h-48 p-6 text-xl bg-transparent text-white placeholder-white/20 focus:outline-none resize-none"
+                  className="w-full h-32 p-6 text-xl bg-transparent text-white placeholder-white/20 focus:outline-none resize-none"
                 />
 
                 {/* Bottom Bar with Provider Selector and Send */}
@@ -130,7 +134,9 @@ export const LandingPage = () => {
                     >
                       {selectedProvider ? (
                         <>
-                          <span>{providers.find(p => p.value === selectedProvider)?.icon}</span>
+                          <span>
+                              <img src={providers.find(p => p.value === selectedProvider)?.icon} alt={selectedProvider} className="w-5 h-5 object-contain" />
+                          </span>
                           <span className="font-medium">{selectedProvider}</span>
                         </>
                       ) : (
@@ -140,7 +146,7 @@ export const LandingPage = () => {
                     </button>
 
                     {isDropdownOpen && (
-                      <div className="absolute bottom-full left-0 mb-2 w-56 bg-slate-900 border border-white/10 rounded-xl overflow-hidden shadow-xl z-20">
+                      <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-white/10 rounded-xl overflow-hidden shadow-xl z-20">
                         {providers.map((provider) => (
                           <button
                             key={provider.value}
@@ -150,7 +156,9 @@ export const LandingPage = () => {
                             }}
                             className="w-full px-4 py-1.5 text-left flex items-center gap-3 hover:bg-white/5 transition-colors"
                           >
-                            <span className="text-lg">{provider.icon}</span>
+                            <span className="text-lg">
+                                <img src={provider.icon} alt={provider.label} className="w-6 h-6 object-contain" />
+                            </span>
                             <span className="text-white text-sm">{provider.label}</span>
                           </button>
                         ))}
