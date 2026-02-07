@@ -139,26 +139,26 @@ const awsComponents: Component[] = [
 
 // GCP Terraform Components
 const gcpComponents: Component[] = [
-    { id: 'google_compute_instance', name: 'Compute Instance', icon: '🖥️', description: 'Virtual machine', category: 'Compute' },
-    { id: 'google_cloudfunctions_function', name: 'Cloud Function', icon: '⚡', description: 'Serverless function', category: 'Compute' },
-    { id: 'google_storage_bucket', name: 'Cloud Storage', icon: '�', description: 'Object storage', category: 'Storage' },
-    { id: 'google_sql_database_instance', name: 'Cloud SQL', icon: '�️', description: 'Managed database', category: 'Database' },
-    { id: 'google_firestore_database', name: 'Firestore', icon: '🔥', description: 'NoSQL database', category: 'Database' },
-    { id: 'google_compute_network', name: 'VPC Network', icon: '🌐', description: 'Virtual network', category: 'Networking' },
-    { id: 'google_compute_url_map', name: 'Load Balancer', icon: '⚖️', description: 'HTTP(S) load balancer', category: 'Networking' },
-    { id: 'google_cloud_run_service', name: 'Cloud Run', icon: '�', description: 'Containerized app', category: 'Compute' },
+    { id: 'google_compute_instance', name: 'Compute Instance', icon: '🖥️', description: 'Virtual machine', category: 'Compute', resourceType: 'gcp_compute_instance' },
+    { id: 'google_cloudfunctions_function', name: 'Cloud Function', icon: '⚡', description: 'Serverless function', category: 'Compute', resourceType: 'gcp_cloud_function' },
+    { id: 'google_storage_bucket', name: 'Cloud Storage', icon: '�', description: 'Object storage', category: 'Storage', resourceType: 'gcp_cloud_storage' },
+    { id: 'google_sql_database_instance', name: 'Cloud SQL', icon: '�️', description: 'Managed database', category: 'Database', resourceType: 'gcp_cloud_sql' },
+    { id: 'google_firestore_database', name: 'Firestore', icon: '🔥', description: 'NoSQL database', category: 'Database', resourceType: 'gcp_firestore' },
+    { id: 'google_compute_network', name: 'VPC Network', icon: '🌐', description: 'Virtual network', category: 'Networking', resourceType: 'gcp_vpc' },
+    { id: 'google_compute_url_map', name: 'Load Balancer', icon: '⚖️', description: 'HTTP(S) load balancer', category: 'Networking', resourceType: 'gcp_load_balancer' },
+    { id: 'google_cloud_run_service', name: 'Cloud Run', icon: '�', description: 'Containerized app', category: 'Compute', resourceType: 'gcp_cloud_run' },
 ];
 
 // Azure Terraform Components
 const azureComponents: Component[] = [
-    { id: 'azurerm_linux_virtual_machine', name: 'Virtual Machine', icon: '🖥️', description: 'Linux VM', category: 'Compute' },
-    { id: 'azurerm_function_app', name: 'Function App', icon: '⚡', description: 'Serverless function', category: 'Compute' },
-    { id: 'azurerm_storage_account', name: 'Storage Account', icon: '�', description: 'Blob storage', category: 'Storage' },
-    { id: 'azurerm_mssql_server', name: 'SQL Server', icon: '�️', description: 'SQL database', category: 'Database' },
-    { id: 'azurerm_cosmosdb_account', name: 'Cosmos DB', icon: '🌟', description: 'NoSQL database', category: 'Database' },
-    { id: 'azurerm_virtual_network', name: 'Virtual Network', icon: '🌐', description: 'VNet', category: 'Networking' },
+    { id: 'azurerm_linux_virtual_machine', name: 'Virtual Machine', icon: '🖥️', description: 'Linux VM', category: 'Compute', resourceType: 'azure_vm' },
+    { id: 'azurerm_function_app', name: 'Function App', icon: '⚡', description: 'Serverless function', category: 'Compute', resourceType: 'azure_function_apps' },
+    { id: 'azurerm_storage_account', name: 'Storage Account', icon: '�', description: 'Blob storage', category: 'Storage', resourceType: 'azure_storage_account' },
+    { id: 'azurerm_mssql_server', name: 'SQL Server', icon: '�️', description: 'SQL database', category: 'Database', resourceType: 'azure_sql_server' },
+    { id: 'azurerm_cosmosdb_account', name: 'Cosmos DB', icon: '🌟', description: 'NoSQL database', category: 'Database', resourceType: 'azure_cosmos_db' },
+    { id: 'azurerm_virtual_network', name: 'Virtual Network', icon: '🌐', description: 'VNet', category: 'Networking', resourceType: 'azure_virtual_network' },
     { id: 'azurerm_lb', name: 'Load Balancer', icon: '⚖️', description: 'Traffic distribution', category: 'Networking' },
-    { id: 'azurerm_app_service', name: 'App Service', icon: '�', description: 'Web app hosting', category: 'Compute' },
+    { id: 'azurerm_app_service', name: 'App Service', icon: '�', description: 'Web app hosting', category: 'Compute', resourceType: 'azure_app_service' },
 ];
 
 const allCategories = ['Compute', 'Storage', 'Database', 'Networking'];
