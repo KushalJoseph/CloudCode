@@ -237,7 +237,25 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
                                             className="flex items-center gap-3 px-4 py-2 mx-2 rounded-md hover:bg-slate-800 cursor-grab active:cursor-grabbing group"
                                         >
                                             <span className="text-xs text-white/30 group-hover:text-white/50">⋮⋮</span>
-                                            <span className="text-xl">{component.icon}</span>
+
+                                            {/* Icon - Image for all providers, Emoji fallback */}
+                                            {['AWS', 'GCP', 'Azure'].includes(cloudProvider) ? (
+                                                <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-white/10 p-1 rounded-sm">
+                                                    <img
+                                                        src={`/${cloudProvider.toLowerCase() === 'aws' ? 'aws-icons' : cloudProvider.toLowerCase() === 'gcp' ? 'gcp-icons' : 'azure-icons'}/${component.resourceType || component.id}.png`}
+                                                        alt={component.name}
+                                                        className="w-full h-full object-contain"
+                                                        onError={(e) => {
+                                                            e.currentTarget.style.display = 'none';
+                                                            e.currentTarget.parentElement!.innerHTML = `<span class="text-xl">${component.icon}</span>`;
+                                                            e.currentTarget.parentElement!.className = "w-8 h-8 flex-shrink-0 flex items-center justify-center";
+                                                        }}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <span className="text-xl w-8 h-8 flex items-center justify-center">{component.icon}</span>
+                                            )}
+
                                             <div className="flex-1 min-w-0">
                                                 <div className="text-white text-sm font-medium truncate">{component.name}</div>
                                                 <div className="text-white/40 text-xs truncate">{component.description}</div>

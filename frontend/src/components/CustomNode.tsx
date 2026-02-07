@@ -7,6 +7,7 @@ interface NodeData {
     icon: string;
     color: string;
     description: string;
+    resourceType?: string;
     onEdit?: () => void;
 }
 
@@ -34,6 +35,15 @@ const iconColorMap: Record<string, string> = {
     orange: 'text-orange-400'
 };
 
+// Helper to get image path based on component type
+const getImagePath = (type: string) => {
+    if (!type) return null;
+    if (type.startsWith('aws_')) return `/aws-icons/${type}.png`;
+    if (type.startsWith('google_')) return `/gcp-icons/${type}.png`;
+    if (type.startsWith('azurerm_')) return `/azure-icons/${type}.png`;
+    return null;
+};
+
 export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) => {
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -41,6 +51,8 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
     const borderClass = colorMap[data.color] || 'border-slate-600';
     const glowClass = glowMap[data.color] || '';
     const iconClass = iconColorMap[data.color] || 'text-slate-400';
+
+    const imagePath = getImagePath(data.resourceType || data.type);
 
     const handleDelete = () => {
         deleteElements({ nodes: [{ id }] });
@@ -153,8 +165,25 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 )}
 
                 {/* Icon */}
-                <div className={`text-4xl mb-2 text-center ${iconClass} transition-colors duration-300`}>
-                    {data.icon}
+                <div className={`mb-2 flex justify-center items-center h-12 transition-colors duration-300`}>
+                    {imagePath ? (
+                        <img
+                            src={imagePath}
+                            alt={data.label}
+                            className="w-12 h-12 object-contain drop-shadow-md"
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                if (e.currentTarget.parentElement) {
+                                    e.currentTarget.parentElement.className = `text-4xl mb-2 text-center text-slate-400 transition-colors duration-300 ${iconClass}`;
+                                    e.currentTarget.parentElement.innerText = data.icon;
+                                }
+                            }}
+                        />
+                    ) : (
+                        <div className={`text-4xl text-center ${iconClass}`}>
+                            {data.icon}
+                        </div>
+                    )}
                 </div>
 
                 {/* Label */}
