@@ -9,6 +9,9 @@ import type { Node } from 'reactflow';
 import awsLogo from '../assets/aws_logo.png';
 import azureLogo from '../assets/azure_logo.svg';
 import gcpLogo from '../assets/google_logo.svg';
+import analyticsIcon from '../assets/Analytics.svg';
+import totalResourceIcon from '../assets/Total_resource.svg';
+import dollarIcon from '../assets/dollar.png';
 
 interface AnalyticsDashboardProps {
     nodes: Node[];
@@ -195,8 +198,8 @@ export const AnalyticsDashboard = ({ nodes }: AnalyticsDashboardProps) => {
             {/* Header */}
             <div className="px-8 py-6 border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center border border-purple-500/20 dark:border-purple-500/30">
-                        <span className="text-xl">📊</span>
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center border border-purple-500/20 dark:border-purple-500/30 overflow-hidden">
+                        <img src={analyticsIcon} alt="Analytics" className="w-6 h-6 object-contain" />
                     </div>
                     <div>
                         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Infrastructure Analytics</h2>
@@ -211,13 +214,13 @@ export const AnalyticsDashboard = ({ nodes }: AnalyticsDashboardProps) => {
                     <SummaryCard
                         title="Total Resources"
                         value={analytics.totalResources}
-                        icon="📦"
+                        icon={<img src={totalResourceIcon} alt="Total Resources" className="w-8 h-8 object-contain" />}
                         color="blue"
                     />
                     <SummaryCard
                         title="Estimated Monthly Cost"
                         value={`$${analytics.totalCost.toFixed(2)}`}
-                        icon="💰"
+                        icon={<img src={dollarIcon} alt="Cost" className="w-8 h-8 object-contain" />}
                         color="green"
                     />
                     <SummaryCard
@@ -235,7 +238,13 @@ export const AnalyticsDashboard = ({ nodes }: AnalyticsDashboardProps) => {
                     <SummaryCard
                         title="Cheapest Provider"
                         value={analytics.cheapestProvider.name}
-                        icon="🏷️"
+                        icon={
+                            <img 
+                                src={analytics.cheapestProvider.name === 'AWS' ? awsLogo : analytics.cheapestProvider.name === 'GCP' ? gcpLogo : azureLogo} 
+                                alt={analytics.cheapestProvider.name} 
+                                className="w-8 h-8 object-contain"
+                            />
+                        }
                         color="yellow"
                         subtext={analytics.savings > 0 ? `Save $${analytics.savings.toFixed(2)}` : 'Best Price'}
                     />
