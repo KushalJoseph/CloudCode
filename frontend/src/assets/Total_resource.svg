@@ -1,0 +1,18 @@
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="totalResourceTitle totalResourceDesc">
+    <title id="totalResourceTitle">Total Resource Icon</title>
+    <desc id="totalResourceDesc">An icon representing aggregated resources, featuring diverse colored segments converging into a central hub containing the summation symbol (Sigma).</desc>
+    <g id="Total-Resource" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        
+        <circle id="Center-Hub" fill="#2563EB" cx="32" cy="32" r="16"></circle>
+        
+        <path d="M26,22 L38,22 L38,25 L31,32 L38,39 L38,42 L26,42 L26,39 L34,32 L26,25 L26,22 Z" id="Sigma-Symbol" fill="#FFFFFF"></path>
+
+        <path d="M32,8 C18.745166,8 8,18.745166 8,32" id="Resource-1" stroke="#06B6D4" stroke-width="6" stroke-linecap="round" transform="translate(20, 20) scale(0.85) translate(-20, -20)"></path>
+        
+        <path d="M56,32 C56,18.745166 45.254834,8 32,8" id="Resource-2" stroke="#F59E0B" stroke-width="6" stroke-linecap="round" transform="translate(44, 20) scale(0.85) translate(-44, -20)"></path>
+
+        <path d="M32,56 C45.254834,56 56,45.254834 56,32" id="Resource-3" stroke="#DC2626" stroke-width="6" stroke-linecap="round" transform="translate(44, 44) scale(0.85) translate(-44, -44)"></path>
+        
+        <path d="M8,32 C8,45.254834 18.745166,56 32,56" id="Resource-4" stroke="#10B981" stroke-width="6" stroke-linecap="round" transform="translate(20, 44) scale(0.85) translate(-20, -44)"></path>
+    </g>
+</svg>

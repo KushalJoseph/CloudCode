@@ -1,0 +1,27 @@
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Modern Analytics Icon</title>
+    <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Analytics-Icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <line x1="4" y1="58" x2="60" y2="58" id="Baseline" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round"></line>
+        
+        <g id="Bars" transform="translate(6.000000, 10.000000)">
+            <rect id="Bar-1" fill="#93C5FD" x="0" y="32" width="10" height="16" rx="2"></rect>
+            <rect id="Bar-2" fill="#60A5FA" x="14" y="20" width="10" height="28" rx="2"></rect>
+            <rect id="Bar-3" fill="#3B82F6" x="28" y="8" width="10" height="40" rx="2"></rect>
+            <rect id="Bar-4" fill="#2563EB" x="42" y="0" width="10" height="48" rx="2"></rect>
+        </g>
+        
+        <path d="M11,44 C18,42 25,25 35,20 C45,15 50,8 56,8" id="Trend-Line" stroke="#06B6D4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        
+        <circle id="Data-Point" fill="#06B6D4" filter="url(#glow)" cx="56" cy="8" r="4"></circle>
+        <circle id="Data-Point-Inner" fill="#FFFFFF" cx="56" cy="8" r="2"></circle>
+    </g>
+</svg>

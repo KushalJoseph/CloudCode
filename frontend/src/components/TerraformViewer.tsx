@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useTheme } from '../context/ThemeContext';
+import terraformLogo from '../assets/Terraform.png';
 
 interface TerraformViewerProps {
     code: string;
@@ -21,8 +22,8 @@ export const TerraformViewer = ({ code }: TerraformViewerProps) => {
         <div className="h-full flex flex-col bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-white/10 transition-colors duration-300">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-slate-900/50">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center border border-indigo-500/20 dark:border-indigo-500/30">
-                        <span className="text-lg">📄</span>
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center border border-indigo-500/20 dark:border-indigo-500/30 overflow-hidden">
+                        <img src={terraformLogo} alt="Terraform" className="w-6 h-6 object-contain" />
                     </div>
                     <div>
                         <h3 className="text-slate-900 dark:text-white font-medium">Terraform Configuration</h3>

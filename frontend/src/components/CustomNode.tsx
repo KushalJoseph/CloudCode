@@ -85,7 +85,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 id="target-top"
                 isConnectable={true}
                 isConnectableStart={false}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 !rounded-full opacity-0"
                 style={{ top: -6 }}
             />
             <Handle
@@ -94,7 +94,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 id="target-right"
                 isConnectable={true}
                 isConnectableStart={false}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 !rounded-full opacity-0"
                 style={{ right: -6 }}
             />
             <Handle
@@ -103,7 +103,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 id="target-bottom"
                 isConnectable={true}
                 isConnectableStart={false}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 !rounded-full opacity-0"
                 style={{ bottom: -6 }}
             />
             <Handle
@@ -112,7 +112,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 id="target-left"
                 isConnectable={true}
                 isConnectableStart={false}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 !rounded-full opacity-0"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 !rounded-full opacity-0"
                 style={{ left: -6 }}
             />
 
@@ -122,7 +122,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 position={Position.Top}
                 id="source-top"
                 isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 hover:!bg-slate-600 dark:hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
                 style={{ top: -6 }}
             />
             <Handle
@@ -130,7 +130,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 position={Position.Right}
                 id="source-right"
                 isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 hover:!bg-slate-600 dark:hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
                 style={{ right: -6 }}
             />
             <Handle
@@ -138,7 +138,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 position={Position.Bottom}
                 id="source-bottom"
                 isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 hover:!bg-slate-600 dark:hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
                 style={{ bottom: -6 }}
             />
             <Handle
@@ -146,7 +146,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 position={Position.Left}
                 id="source-left"
                 isConnectable={true}
-                className="w-3 h-3 !bg-slate-400 !border-2 !border-slate-800 hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
+                className="w-3 h-3 !bg-slate-300 dark:!bg-slate-400 !border-2 !border-slate-400 dark:!border-slate-800 hover:!bg-slate-600 dark:hover:!bg-white hover:!scale-110 !transition-all !rounded-full opacity-0 hover:opacity-100"
                 style={{ left: -6 }}
             />
 
@@ -154,7 +154,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
             <div
                 className={`
                 px-6 py-4 rounded-xl
-                bg-slate-900/90 backdrop-blur-md
+                bg-white/90 dark:bg-slate-900/90 backdrop-blur-md
                 border-2 ${borderClass}
                 ${glowClass}
                 min-w-[180px]
@@ -168,7 +168,7 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                         e.stopPropagation();
                         setShowMenu(!showMenu);
                     }}
-                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center text-white text-xs transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-200 dark:bg-black/20 hover:bg-slate-300 dark:hover:bg-black/40 flex items-center justify-center text-slate-600 dark:text-white text-xs transition-all opacity-0 group-hover:opacity-100"
                     title="Options"
                 >
                     ⋮
@@ -176,13 +176,13 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
 
                 {/* Dropdown menu */}
                 {showMenu && (
-                    <div className="absolute top-10 right-2 bg-slate-800 border border-white/20 rounded-md shadow-lg z-50 min-w-[120px]">
+                    <div className="absolute top-10 right-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/20 rounded-md shadow-lg z-50 min-w-[120px]">
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleDelete();
                             }}
-                            className="w-full px-4 py-2 text-left text-white hover:bg-red-600 rounded-md flex items-center gap-2 text-sm"
+                            className="w-full px-4 py-2 text-left text-slate-700 dark:text-white hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-white rounded-md flex items-center gap-2 text-sm"
                         >
                             <span>🗑️</span>
                             <span>Delete</span>
@@ -214,12 +214,12 @@ export const CustomNode = memo(({ id, data }: { id: string; data: NodeData }) =>
                 </div>
 
                 {/* Label */}
-                <div className="text-slate-200 font-semibold text-center mb-1 transition-colors duration-300 group-hover:text-white">
+                <div className="text-slate-700 dark:text-slate-200 font-semibold text-center mb-1 transition-colors duration-300 group-hover:text-slate-900 dark:group-hover:text-white">
                     {data.label}
                 </div>
 
                 {/* Description */}
-                <div className="text-slate-400 text-xs text-center transition-colors duration-300 group-hover:text-slate-300">
+                <div className="text-slate-500 dark:text-slate-400 text-xs text-center transition-colors duration-300 group-hover:text-slate-600 dark:group-hover:text-slate-300">
                     {data.description}
                 </div>
             </div>

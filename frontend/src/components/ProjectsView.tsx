@@ -401,15 +401,15 @@ export const ProjectsView = () => {
             {/* New Project Modal */}
             {showNewProjectModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-scale-in">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-scale-in transition-colors">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-white">Create New Project</h2>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Create New Project</h2>
                             <button
                                 onClick={() => {
                                     setShowNewProjectModal(false);
                                     resetForm();
                                 }}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                                className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
                             >
                                 ✕
                             </button>
@@ -418,21 +418,21 @@ export const ProjectsView = () => {
                         <div className="space-y-4">
                             {/* Project Title */}
                             <div>
-                                <label className="block text-sm font-medium text-white/70 mb-2">
-                                    Project Title <span className="text-red-400">*</span>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-2">
+                                    Project Title <span className="text-red-500 dark:text-red-400">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={newTitle}
                                     onChange={(e) => setNewTitle(e.target.value)}
                                     placeholder="My Cloud Architecture"
-                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-green-500/50 transition-colors"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-green-500/50 transition-colors"
                                 />
                             </div>
 
                             {/* Project Description */}
                             <div>
-                                <label className="block text-sm font-medium text-white/70 mb-2">
+                                <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-2">
                                     Description
                                 </label>
                                 <textarea
@@ -440,13 +440,13 @@ export const ProjectsView = () => {
                                     onChange={(e) => setNewDescription(e.target.value)}
                                     placeholder="A brief description of your project..."
                                     rows={3}
-                                    className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-green-500/50 transition-colors resize-none"
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-green-500/50 transition-colors resize-none"
                                 />
                             </div>
 
                             {/* Cloud Provider */}
                             <div>
-                                <label className="block text-sm font-medium text-white/70 mb-2">
+                                <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-2">
                                     Cloud Provider
                                 </label>
                                 <div className="grid grid-cols-3 gap-3">
@@ -455,12 +455,12 @@ export const ProjectsView = () => {
                                             key={provider.value}
                                             onClick={() => setNewProvider(provider.value)}
                                             className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${newProvider === provider.value
-                                                ? 'border-green-500 bg-green-500/10'
-                                                : 'border-white/10 bg-slate-800 hover:border-white/20'
+                                                ? 'border-green-500 bg-green-50 dark:bg-green-500/10'
+                                                : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 hover:border-slate-300 dark:hover:border-white/20'
                                                 }`}
                                         >
                                             <img src={provider.icon} alt={provider.label} className="w-8 h-8 object-contain" />
-                                            <span className={`text-xs font-medium ${newProvider === provider.value ? 'text-green-400' : 'text-white/60'}`}>
+                                            <span className={`text-xs font-medium ${newProvider === provider.value ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-white/60'}`}>
                                                 {provider.value}
                                             </span>
                                         </button>
@@ -476,7 +476,7 @@ export const ProjectsView = () => {
                                     setShowNewProjectModal(false);
                                     resetForm();
                                 }}
-                                className="flex-1 px-4 py-3 border border-white/10 text-white/70 rounded-xl hover:bg-white/5 transition-all font-medium"
+                                className="flex-1 px-4 py-3 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all font-medium"
                             >
                                 Cancel
                             </button>
@@ -485,7 +485,7 @@ export const ProjectsView = () => {
                                 disabled={!newTitle.trim()}
                                 className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${newTitle.trim()
                                     ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-500 hover:to-emerald-500 shadow-lg shadow-green-900/30'
-                                    : 'bg-white/10 text-white/30 cursor-not-allowed'
+                                    : 'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/30 cursor-not-allowed'
                                     }`}
                             >
                                 Create Project
@@ -498,35 +498,35 @@ export const ProjectsView = () => {
             {/* Delete Confirmation Modal */}
             {showDeleteModal && selectedProject && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-scale-in">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl animate-scale-in transition-colors">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold text-white">Delete Project</h2>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Delete Project</h2>
                             <button
                                 onClick={() => {
                                     setShowDeleteModal(false);
                                     setSelectedProject(null);
                                     setDeleteConfirmText('');
                                 }}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                                className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
                             >
                                 ✕
                             </button>
                         </div>
 
                         <div className="mb-6">
-                            <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl mb-4">
-                                <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
-                                    <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl mb-4">
+                                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center shrink-0">
+                                    <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
-                                <p className="text-sm text-white/80">
-                                    This action cannot be undone. This will permanently delete <strong className="text-white">{selectedProject.title}</strong>.
+                                <p className="text-sm text-slate-600 dark:text-white/80">
+                                    This action cannot be undone. This will permanently delete <strong className="text-slate-900 dark:text-white">{selectedProject.title}</strong>.
                                 </p>
                             </div>
 
-                            <label className="block text-sm font-medium text-white/70 mb-2">
-                                Type <code className="px-1.5 py-0.5 bg-slate-800 rounded text-red-400">delete {selectedProject.title}</code> to confirm
+                            <label className="block text-sm font-medium text-slate-700 dark:text-white/70 mb-2">
+                                Type <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-red-600 dark:text-red-400">delete {selectedProject.title}</code> to confirm
                             </label>
                             <input
                                 type="text"
@@ -534,7 +534,7 @@ export const ProjectsView = () => {
                                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                                 onPaste={(e) => e.preventDefault()}
                                 placeholder={`delete ${selectedProject.title}`}
-                                className="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-red-500/50 transition-colors font-mono"
+                                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-red-500/50 transition-colors font-mono"
                             />
                         </div>
 
@@ -546,7 +546,7 @@ export const ProjectsView = () => {
                                     setSelectedProject(null);
                                     setDeleteConfirmText('');
                                 }}
-                                className="flex-1 px-4 py-3 border border-white/10 text-white/70 rounded-xl hover:bg-white/5 transition-all font-medium"
+                                className="flex-1 px-4 py-3 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all font-medium"
                             >
                                 Cancel
                             </button>
@@ -555,7 +555,7 @@ export const ProjectsView = () => {
                                 disabled={deleteConfirmText !== `delete ${selectedProject.title}`}
                                 className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${deleteConfirmText === `delete ${selectedProject.title}`
                                     ? 'bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/30'
-                                    : 'bg-white/10 text-white/30 cursor-not-allowed'
+                                    : 'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/30 cursor-not-allowed'
                                     }`}
                             >
                                 Delete Project
