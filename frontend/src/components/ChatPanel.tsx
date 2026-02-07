@@ -114,69 +114,88 @@ export const ChatPanel = ({ initialMessage, refinedPrompt }: ChatPanelProps) => 
     }
 
     return (
-        <div className="w-80 border-l border-white/10 bg-slate-900 flex flex-col">
+        <div className="w-[400px] border-l border-white/10 bg-slate-950/95 backdrop-blur-2xl flex flex-col shadow-2xl">
             {/* Header */}
-            <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <span className="text-green-500">💬</span>
-                    <span className="text-white font-semibold">AI Chat</span>
+            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center border border-green-500/30">
+                        <span className="text-green-400 text-sm">✨</span>
+                    </div>
+                    <div>
+                        <h3 className="text-white font-bold text-sm">AI Architect</h3>
+                        <p className="text-green-400/60 text-[10px] uppercase tracking-wider font-semibold">Online</p>
+                    </div>
                 </div>
                 <button
                     onClick={() => setIsOpen(false)}
-                    className="text-white/40 hover:text-white text-lg"
+                    className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
                 >
                     ✕
                 </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
                 {messages.map((message) => (
                     <div
                         key={message.id}
-                        className={`${message.role === 'assistant'
-                            ? 'bg-slate-800 border border-white/10'
-                            : 'bg-green-600/20 border border-green-500/30'
-                            } rounded-lg p-3`}
+                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                        <p className="text-white/90 text-sm whitespace-pre-wrap">{message.content}</p>
+                        <div
+                            className={`max-w-[85%] rounded-2xl p-4 shadow-sm transition-all duration-300 ${message.role === 'assistant'
+                                ? 'bg-slate-900/90 border border-emerald-500/30 text-slate-200 rounded-tl-sm shadow-[0_0_20px_-5px_rgba(16,185,129,0.3)]'
+                                : 'bg-gradient-to-br from-emerald-600 to-green-600 text-white rounded-tr-sm shadow-emerald-900/20'
+                                }`}
+                        >
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                        </div>
                     </div>
                 ))}
 
                 {/* Suggested Prompts */}
                 {messages.length === 1 && (
-                    <div className="space-y-2">
-                        {suggestedPrompts.map((prompt) => (
-                            <button
-                                key={prompt}
-                                onClick={() => handleSuggestion(prompt)}
-                                className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md text-left"
-                            >
-                                {prompt}
-                            </button>
-                        ))}
+                    <div className="border-t border-white/5 pt-4 mt-2">
+                        <p className="text-xs text-white/40 mb-3 px-1 uppercase tracking-wider font-semibold">Suggested Actions</p>
+                        <div className="space-y-2">
+                            {suggestedPrompts.map((prompt) => (
+                                <button
+                                    key={prompt}
+                                    onClick={() => handleSuggestion(prompt)}
+                                    className="w-full px-4 py-3 bg-slate-800/50 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 text-sm font-medium rounded-xl border border-white/5 hover:border-emerald-500/30 transition-all text-left flex items-center gap-3 group"
+                                >
+                                    <span className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">⚡</span>
+                                    {prompt}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-white/10">
-                <div className="flex gap-2">
-                    <input
-                        type="text"
+            <div className="p-4 border-t border-white/10 bg-slate-900/50">
+                <div className="relative flex items-end gap-2 p-2 bg-slate-900 border border-white/10 rounded-2xl focus-within:border-emerald-500/50 focus-within:bg-slate-800/50 transition-all shadow-inner">
+                    <textarea
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Ask to build an architecture..."
-                        className="flex-1 px-3 py-2 bg-slate-800 border border-white/10 rounded-md text-white text-sm placeholder-white/40 focus:outline-none focus:border-green-500/50"
+                        placeholder="Describe your cloud architecture..."
+                        rows={1}
+                        className="flex-1 px-3 py-2 bg-transparent text-white text-sm placeholder-white/20 focus:outline-none resize-none max-h-32 min-h-[40px]"
+                        style={{ height: 'auto', minHeight: '24px' }}
                     />
                     <button
                         onClick={handleSend}
                         disabled={!input.trim()}
-                        className="px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-700 text-white rounded-md"
+                        className="p-2 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 disabled:from-slate-700 disabled:to-slate-800 disabled:text-white/20 text-white rounded-xl shadow-lg shadow-emerald-900/20 transition-all hover:scale-105 active:scale-95 mb-0.5"
                     >
-                        ➤
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                        </svg>
                     </button>
+                </div>
+                <div className="text-center mt-2">
+                    <p className="text-[10px] text-white/20">AI generates suggestions based on best practices</p>
                 </div>
             </div>
         </div>
