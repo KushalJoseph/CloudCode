@@ -337,7 +337,7 @@ export const ComponentsPanel = ({ cloudProvider = 'AWS' }: ComponentsPanelProps)
     };
 
     return (
-        <div className="w-60 border-r border-white/10 bg-slate-900 flex flex-col">
+        <div className="h-full bg-slate-900 flex flex-col">
             {/* Header */}
             <div className="p-4 border-b border-white/10">
                 <h2 className="text-white font-semibold mb-3">Components</h2>

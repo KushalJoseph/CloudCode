@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNodesState, useEdgesState, addEdge, MarkerType } from 'reactflow';
 import type { Connection } from 'reactflow';
@@ -39,6 +39,51 @@ export const DesignerView = () => {
 
     // Validation & Save State
     const [isSaving, setIsSaving] = useState(false);
+    
+    // Layout State
+    const [leftPanelWidth, setLeftPanelWidth] = useState(240);
+    const [rightPanelWidth, setRightPanelWidth] = useState(400);
+    const [isChatOpen, setIsChatOpen] = useState(true);
+    const isResizing = useRef(false);
+    const currentResizePanel = useRef<'left' | 'right' | null>(null);
+
+    const startResizing = useCallback((e: React.MouseEvent, panel: 'left' | 'right') => {
+        e.preventDefault();
+        isResizing.current = true;
+        currentResizePanel.current = panel;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+    }, []);
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing.current || !currentResizePanel.current) return;
+
+            if (currentResizePanel.current === 'left') {
+                const newWidth = Math.max(200, Math.min(600, e.clientX));
+                setLeftPanelWidth(newWidth);
+            } else {
+                const newWidth = Math.max(300, Math.min(800, window.innerWidth - e.clientX));
+                setRightPanelWidth(newWidth);
+            }
+        };
+
+        const handleMouseUp = () => {
+            isResizing.current = false;
+            currentResizePanel.current = null;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, []);
+
     const [validationState, setValidationState] = useState<{
         analysis?: string;
         errors: string[];
@@ -334,10 +379,18 @@ export const DesignerView = () => {
                 /* Main Content - 3 Panel Layout */
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left Panel - Components */}
-                    <ComponentsPanel cloudProvider={cloudProvider} />
+                    <div style={{ width: leftPanelWidth }} className="flex-shrink-0 flex flex-col relative">
+                        <ComponentsPanel cloudProvider={cloudProvider} />
+                        
+                        {/* Right Resize Handle */}
+                        <div
+                            className="absolute top-0 right-[-4px] w-[8px] h-full cursor-col-resize z-20 hover:bg-green-500/50 transition-colors opacity-0 hover:opacity-100"
+                            onMouseDown={(e) => startResizing(e, 'left')}
+                        />
+                    </div>
 
                     {/* Center - Diagram/Code Area */}
-                    <div className="flex-1 relative flex flex-col overflow-hidden bg-slate-950">
+                    <div className="flex-1 relative flex flex-col overflow-hidden bg-slate-950 min-w-0">
 
                         {/* View Toggle - Absolute positioned */}
                         <div className="absolute top-4 right-4 z-10 bg-slate-900/90 backdrop-blur-sm border border-white/10 rounded-lg p-1 flex gap-1 shadow-xl">
@@ -436,12 +489,45 @@ export const DesignerView = () => {
                     </div>
 
                     {/* Right Panel - Chat */}
-                    <ChatPanel
-                        initialMessage={state?.initialMessage}
-                        refinedPrompt={state?.refinedPrompt}
-                        onSendMessage={handleSendMessage}
-                        isLoading={isLoading}
-                    />
+                    {isChatOpen ? (
+                        <div style={{ width: rightPanelWidth }} className="flex-shrink-0 flex flex-col relative h-[calc(100vh-64px)]">
+                            {/* Left Resize Handle */}
+                            <div
+                                className="absolute top-0 left-[-4px] w-[8px] h-full cursor-col-resize z-20 hover:bg-green-500/50 transition-colors opacity-0 hover:opacity-100"
+                                onMouseDown={(e) => startResizing(e, 'right')}
+                            />
+                            
+                            <ChatPanel
+                                initialMessage={state?.initialMessage}
+                                refinedPrompt={state?.refinedPrompt}
+                                onSendMessage={handleSendMessage}
+                                isLoading={isLoading}
+                                isOpen={isChatOpen}
+                                onClose={() => setIsChatOpen(false)}
+                            />
+                        </div>
+                    ) : (
+                         <button
+                            onClick={() => setIsChatOpen(true)}
+                            className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-2xl shadow-green-500/50 flex items-center justify-center z-50 transition-all hover:scale-110 border-2 border-green-400/30"
+                            title="Open AI Chat"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className="w-7 h-7"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+                                />
+                            </svg>
+                        </button>
+                    )}
                 </div>
             ) : (
                 /* Projects View */
