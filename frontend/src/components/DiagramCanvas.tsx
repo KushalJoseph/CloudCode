@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
     Background,
     useNodesState,
@@ -24,6 +24,7 @@ export const DiagramCanvas = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [selectedNode, setSelectedNode] = useState<{ id: string; label: string; type: string; icon: string; color: string; description: string } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
 
     const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge({
@@ -44,6 +45,7 @@ export const DiagramCanvas = () => {
         style: {
             stroke: '#06b6d4',
             strokeWidth: 2.5,
+            cursor: 'pointer',
         },
     };
 
@@ -61,8 +63,9 @@ export const DiagramCanvas = () => {
                 y: event.clientY - reactFlowBounds.top - 40,
             };
 
+            const nodeId = `${component.id}-${Date.now()}`;
             const newNode: Node = {
-                id: `${component.id}-${Date.now()}`,
+                id: nodeId,
                 type: 'custom',
                 position,
                 data: {
@@ -71,6 +74,7 @@ export const DiagramCanvas = () => {
                     icon: component.icon,
                     color: getColorForCategory(component.category),
                     description: component.description,
+                    onEdit: () => handleNodeEdit(nodeId, component.name, component.id, component.icon, getColorForCategory(component.category), component.description),
                 },
             };
 
@@ -84,27 +88,70 @@ export const DiagramCanvas = () => {
         event.dataTransfer.dropEffect = 'copy';
     };
 
-    const handleNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
+    const handleNodeEdit = useCallback((id: string, label: string, type: string, icon: string, color: string, description: string) => {
         setSelectedNode({
-            id: node.id,
-            label: node.data.label,
-            type: node.data.type,
-            icon: node.data.icon,
-            color: node.data.color,
-            description: node.data.description,
+            id,
+            label,
+            type,
+            icon,
+            color,
+            description,
         });
         setIsModalOpen(true);
     }, []);
+
+    // Ensure all nodes have the onEdit callback
+    useEffect(() => {
+        setNodes((nds) =>
+            nds.map((node) => ({
+                ...node,
+                data: {
+                    ...node.data,
+                    onEdit: () => handleNodeEdit(
+                        node.id,
+                        node.data.label,
+                        node.data.type,
+                        node.data.icon,
+                        node.data.color,
+                        node.data.description
+                    ),
+                },
+            }))
+        );
+    }, [handleNodeEdit, setNodes]);
+
+    const handleEdgeClick = useCallback((_event: React.MouseEvent, edge: any) => {
+        setSelectedEdge(edge.id);
+    }, []);
+
+    const handleDeleteEdge = () => {
+        if (selectedEdge) {
+            setEdges((eds) => eds.filter((e) => e.id !== selectedEdge));
+            setSelectedEdge(null);
+        }
+    };
+
+    const handleClearCanvas = () => {
+        setNodes([]);
+        setEdges([]);
+        setSelectedEdge(null);
+    };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedNode(null);
     };
 
-    const handleClear = () => {
-        setNodes([]);
-        setEdges([]);
-    };
+    // Update edge styles based on selection
+    const styledEdges = edges.map((edge) => ({
+        ...edge,
+        style: {
+            ...edge.style,
+            stroke: edge.id === selectedEdge ? '#ef4444' : '#06b6d4',
+            strokeWidth: edge.id === selectedEdge ? 3.5 : 2.5,
+        },
+        animated: edge.id === selectedEdge ? false : true,
+    }));
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -116,24 +163,32 @@ export const DiagramCanvas = () => {
             >
                 <ReactFlow
                     nodes={nodes}
-                    edges={edges}
+                    edges={styledEdges}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
-                    onNodeClick={handleNodeClick}
+                    onEdgeClick={handleEdgeClick}
+                    onPaneClick={() => setSelectedEdge(null)}
                     nodeTypes={nodeTypes}
                     defaultEdgeOptions={defaultEdgeOptions}
                     connectionMode={ConnectionMode.Loose}
+                    connectionRadius={50}
+                    connectOnClick={true}
+                    isValidConnection={() => true}
+                    nodesDraggable={true}
+                    nodesConnectable={true}
+                    nodesFocusable={false}
+                    elementsSelectable={false}
+                    selectNodesOnDrag={false}
+                    panOnDrag={true}
                     fitView
                     className="bg-slate-950"
                 >
-                    <Background
-                        variant={BackgroundVariant.Dots}
-                        color="#334155"
-                        gap={20}
-                        size={2}
-                    />
-                    <ZoomControls onClear={handleClear} />
+                    <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#1e293b" />
+                    <ZoomControls onClear={handleClearCanvas} />
+                    {selectedEdge && (
+                        <EdgeDeleteButton onDelete={handleDeleteEdge} />
+                    )}
                 </ReactFlow>
             </div>
 
@@ -154,28 +209,42 @@ const ZoomControls = ({ onClear }: { onClear: () => void }) => {
     const { zoomIn, zoomOut } = useReactFlow();
 
     return (
-        <div className="absolute bottom-4 right-4 flex flex-col gap-2 z-10">
+        <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-10">
             <button
                 onClick={() => zoomIn()}
-                className="w-10 h-10 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105"
+                className="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-white/20 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
                 title="Zoom In"
             >
-                <span className="text-lg">+</span>
+                +
             </button>
             <button
                 onClick={() => zoomOut()}
-                className="w-10 h-10 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-white/10 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105"
+                className="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-white/20 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
                 title="Zoom Out"
             >
-                <span className="text-lg">−</span>
+                −
             </button>
-            <div className="w-10 h-px bg-white/20 my-1" />
             <button
                 onClick={onClear}
-                className="w-10 h-10 rounded-lg bg-slate-800/90 hover:bg-red-600 border border-white/10 text-white flex items-center justify-center shadow-lg transition-all hover:scale-105"
+                className="w-10 h-10 bg-red-600 hover:bg-red-700 border border-red-500/30 rounded-lg text-white font-bold flex items-center justify-center transition-all hover:scale-105"
                 title="Clear Canvas"
             >
-                <span className="text-lg">🗑️</span>
+                🗑️
+            </button>
+        </div>
+    );
+};
+
+// Edge Delete Button Component - Shows when edge is selected
+const EdgeDeleteButton = ({ onDelete }: { onDelete: () => void }) => {
+    return (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+            <button
+                onClick={onDelete}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 border-2 border-white text-white font-semibold flex items-center gap-2 shadow-xl transition-all hover:scale-105"
+            >
+                <span>🗑️</span>
+                <span>Delete Connection</span>
             </button>
         </div>
     );
