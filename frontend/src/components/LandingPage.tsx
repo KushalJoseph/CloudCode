@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { ThemeToggle } from './ThemeToggle';
@@ -16,7 +16,20 @@ export const LandingPage = () => {
   const [text, setText] = useState('');
   const [showContent, setShowContent] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0); // 0: Idle, 1: Process, 2: Generate, 3: Diagram, 4: Done
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
+
+  // Auto-resize textarea based on content
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      const scrollHeight = textarea.scrollHeight;
+      const minHeight = 56; // ~1 line
+      const maxHeight = 200; // ~5 lines max before scroll
+      textarea.style.height = `${Math.min(Math.max(scrollHeight, minHeight), maxHeight)}px`;
+    }
+  }, [message]);
 
   const fullText = "Welcome to CloudCode";
 
@@ -124,11 +137,13 @@ export const LandingPage = () => {
             <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-1 shadow-2xl relative transition-colors duration-300">
               <div className="relative bg-white/50 dark:bg-slate-950/50 rounded-[22px] transition-colors duration-300">
                 <textarea
+                  ref={textareaRef}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Describe your cloud architecture..."
-                  className="w-full h-32 p-6 text-xl bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none resize-none transition-colors duration-300"
+                  rows={1}
+                  className="w-full min-h-[56px] max-h-[200px] p-6 pb-20 text-xl bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none resize-none overflow-y-auto transition-colors duration-300"
                 />
 
                 {/* Bottom Bar with Provider Selector and Send */}

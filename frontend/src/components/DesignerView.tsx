@@ -6,7 +6,9 @@ import { ComponentsPanel } from './ComponentsPanel';
 import { DiagramCanvas } from './DiagramCanvas';
 import { ChatPanel } from './ChatPanel';
 import { ProjectsView } from './ProjectsView';
-import { AWSLogo, GCPLogo, AzureLogo } from './CloudLogos';
+import awsLogo from '../assets/aws_logo.png';
+import gcpLogo from '../assets/google_logo.svg';
+import azureLogo from '../assets/azure_logo.svg';
 import { TerraformViewer } from './TerraformViewer';
 import { AnalyticsDashboard } from './AnalyticsDashboard';
 import { api } from '../services/api';
@@ -19,6 +21,7 @@ import { ThemeToggle } from './ThemeToggle';
 interface LocationState {
     initialMessage?: string;
     cloudProvider?: string;
+    projectName?: string;
     nodes?: any[];
     edges?: any[];
     terraformCode?: string;
@@ -29,6 +32,8 @@ export const DesignerView = () => {
     const location = useLocation();
     const state = location.state as LocationState;
     const cloudProvider = state?.cloudProvider || 'AWS';
+    const [projectName, setProjectName] = useState(state?.projectName || 'Untitled Project');
+    const [isEditingName, setIsEditingName] = useState(false);
     const [activeTab, setActiveTab] = useState<'designer' | 'projects'>('designer');
     const [viewMode, setViewMode] = useState<'diagram' | 'code' | 'analytics'>('diagram');
 
@@ -346,11 +351,34 @@ export const DesignerView = () => {
                         </span>
                     </div>
                     {cloudProvider && activeTab === 'designer' && (
-                        <span className="ml-4 px-3 py-1.5 bg-green-50 dark:bg-green-600/20 border border-green-200 dark:border-green-500/30 rounded-md text-green-700 dark:text-green-400 text-sm font-medium flex items-center gap-2">
-                            {cloudProvider === 'AWS' && <><AWSLogo className="w-4 h-4" /> <span className="hidden sm:inline">AWS</span></>}
-                            {cloudProvider === 'GCP' && <><GCPLogo className="w-4 h-4" /> <span className="hidden sm:inline">GCP</span></>}
-                            {cloudProvider === 'Azure' && <><AzureLogo className="w-4 h-4" /> <span className="hidden sm:inline">Azure</span></>}
-                        </span>
+                        <div className="ml-4 px-3 py-1.5 bg-green-50 dark:bg-green-600/20 border border-green-200 dark:border-green-500/30 rounded-md text-green-700 dark:text-green-400 text-sm font-medium flex items-center gap-2">
+                            {cloudProvider === 'AWS' && <img src={awsLogo} alt="AWS" className="w-4 h-4 object-contain" />}
+                            {cloudProvider === 'GCP' && <img src={gcpLogo} alt="GCP" className="w-4 h-4 object-contain" />}
+                            {cloudProvider === 'Azure' && <img src={azureLogo} alt="Azure" className="w-4 h-4 object-contain" />}
+                            <span className="text-green-400 dark:text-green-500/60">|</span>
+                            {isEditingName ? (
+                                <input
+                                    type="text"
+                                    value={projectName}
+                                    onChange={(e) => setProjectName(e.target.value)}
+                                    onBlur={() => setIsEditingName(false)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') setIsEditingName(false);
+                                        if (e.key === 'Escape') setIsEditingName(false);
+                                    }}
+                                    autoFocus
+                                    className="bg-transparent border-none outline-none text-green-700 dark:text-green-400 font-medium text-sm w-40 focus:ring-0"
+                                />
+                            ) : (
+                                <span 
+                                    onClick={() => setIsEditingName(true)}
+                                    className="cursor-pointer hover:underline hover:text-green-600 dark:hover:text-green-300 transition-colors"
+                                    title="Click to edit project name"
+                                >
+                                    {projectName}
+                                </span>
+                            )}
+                        </div>
                     )}
                 </div>
 
