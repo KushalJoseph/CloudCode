@@ -59,3 +59,13 @@ class UpdateResponse(BaseModel):
     analysis: Optional[str] = None
     errors: Optional[List[str]] = None
     warnings: Optional[List[str]] = None
+
+class DeployRequest(BaseModel):
+    terraform_code: str = Field(..., description="Terraform code to deploy")
+    region: str = Field(default="us-east-1", description="AWS Region")
+
+class DeployResponse(BaseModel):
+    success: bool
+    message: str
+    logs: str
+    outputs: Optional[Dict[str, Any]] = None

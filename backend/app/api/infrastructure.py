@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import GenerateRequest, GenerateResponse, UpdateRequest, UpdateResponse
+from app.models.schemas import GenerateRequest, GenerateResponse, UpdateRequest, UpdateResponse, DeployRequest, DeployResponse
 from app.services.generator import generate_infrastructure
 from app.services.updater import update_terraform_from_changes
+from app.services.deployer import deploy_terraform_to_aws
 
 router = APIRouter()
 
@@ -57,3 +58,21 @@ async def update_infrastructure(request: UpdateRequest):
     except Exception as e:
         print(f"Error during update: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/deploy/aws", response_model=DeployResponse)
+async def deploy_aws(request: DeployRequest):
+    """
+    Deploy Terraform code directly to AWS
+    """
+    try:
+        result = await deploy_terraform_to_aws(
+            terraform_code=request.terraform_code,
+            region=request.region
+        )
+        return DeployResponse(**result)
+    except Exception as e:
+        print(f"Error during deployment: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Deployment failed: {str(e)}"
+        )
