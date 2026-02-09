@@ -75,10 +75,10 @@ export const LandingPage = () => {
       await new Promise(resolve => setTimeout(resolve, 5000));
       setLoadingStep(2); // Step 2: Generating Terraform
 
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 20000));
       setLoadingStep(3); // Step 3: Crafting Diagram
 
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 20000));
       setLoadingStep(4); // All Done
 
       // Wait for API if it's still running (unlikely after 15s but possible)
@@ -148,7 +148,7 @@ export const LandingPage = () => {
 
           {loadingStep === 0 ? (
             /* Chat Interface */
-            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-1 shadow-2xl relative transition-colors duration-300">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-1 shadow-2xl relative z-30 transition-colors duration-300">
               <div className="relative bg-white/50 dark:bg-slate-950/50 rounded-[22px] transition-colors duration-300">
                 <textarea
                   ref={textareaRef}
@@ -157,15 +157,15 @@ export const LandingPage = () => {
                   onKeyDown={handleKeyDown}
                   placeholder="Describe your cloud architecture..."
                   rows={1}
-                  className="w-full min-h-[56px] max-h-[200px] p-6 pb-20 text-xl bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none resize-none overflow-y-auto transition-colors duration-300"
+                  className="w-full min-h-[56px] max-h-[200px] p-6 pb-28 text-xl bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none resize-none overflow-y-auto transition-colors duration-300"
                 />
 
                 {/* Bottom Bar with Provider Selector and Send */}
-                <div className="absolute bottom-4 right-4 left-4 flex justify-between items-center z-10">
+                <div className="absolute bottom-4 right-4 left-4 flex justify-center items-center z-10">
                   <div className="relative">
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all border ${selectedProvider
+                      className={`flex items-center gap-3 px-6 py-4 rounded-2xl transition-all border shadow-sm hover:shadow-md ${selectedProvider
                         ? 'bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white border-slate-200 dark:border-transparent'
                         : 'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-white/50 hover:bg-slate-100 dark:hover:bg-white/10 border-transparent'
                         }`}
@@ -173,18 +173,18 @@ export const LandingPage = () => {
                       {selectedProvider ? (
                         <>
                           <span>
-                            <img src={providers.find(p => p.value === selectedProvider)?.icon} alt={selectedProvider} className="w-5 h-5 object-contain" />
+                            <img src={providers.find(p => p.value === selectedProvider)?.icon} alt={selectedProvider} className="w-6 h-6 object-contain" />
                           </span>
-                          <span className="font-medium">{selectedProvider}</span>
+                          <span className="text-lg font-semibold">{selectedProvider}</span>
                         </>
                       ) : (
-                        <span className="text-sm">Select Provider</span>
+                        <span className="text-lg font-medium">Select Cloud Provider</span>
                       )}
-                      <span className="text-xs">▼</span>
+                      <span className="text-xs opacity-50">▼</span>
                     </button>
 
                     {isDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden shadow-xl z-20">
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-full min-w-[240px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden shadow-xl z-20">
                         {providers.map((provider) => (
                           <button
                             key={provider.value}
@@ -192,12 +192,12 @@ export const LandingPage = () => {
                               setSelectedProvider(provider.value);
                               setIsDropdownOpen(false);
                             }}
-                            className="w-full px-4 py-1.5 text-left flex items-center gap-3 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                            className="w-full px-6 py-4 text-left flex items-center gap-4 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                           >
-                            <span className="text-lg">
-                              <img src={provider.icon} alt={provider.label} className="w-6 h-6 object-contain" />
+                            <span className="text-2xl">
+                              <img src={provider.icon} alt={provider.label} className="w-10 h-10 object-contain" />
                             </span>
-                            <span className="text-slate-700 dark:text-white text-sm">{provider.label}</span>
+                            <span className="text-slate-700 dark:text-white text-lg font-medium">{provider.label}</span>
                           </button>
                         ))}
                       </div>
@@ -207,7 +207,7 @@ export const LandingPage = () => {
                   <button
                     onClick={handleSend}
                     disabled={!message.trim() || !selectedProvider}
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${message.trim() && selectedProvider
+                    className={`absolute right-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all ${message.trim() && selectedProvider
                       ? 'bg-slate-900 dark:bg-white text-white dark:text-black hover:scale-105 shadow-[0_0_20px_-5px_rgba(0,0,0,0.3)] dark:shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]'
                       : 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/20 cursor-not-allowed'
                       }`}
