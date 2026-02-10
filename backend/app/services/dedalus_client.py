@@ -34,17 +34,22 @@ class DedalusClient:
         logger.info(f"User Message: {user_message}")
         
         try:
-            # Using chat completions as per the plan
-            completion = self.client.chat.completions.create(
+            # Using chat completions with streaming enabled
+            stream = self.client.chat.completions.create(
                 model=self.default_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
                 ],
-                temperature=temperature
+                temperature=temperature,
+                stream=True  # Enable streaming for large max_tokens
             )
             
-            content = completion.choices[0].message.content
+            # Collect streaming chunks
+            content = ""
+            for chunk in stream:
+                if chunk.choices[0].delta.content is not None:
+                    content += chunk.choices[0].delta.content
             
             logger.info("--- RECEIVED RESPONSE FROM DEDALUS ---")
             logger.info(f"Response (truncated 200 chars): {content[:200]}...")
